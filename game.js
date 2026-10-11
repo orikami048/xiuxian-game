@@ -318,6 +318,34 @@
     renderLogs();
   }
 
+  // === 《寻道大千》国风无阻断浮空 Toast 提示系统 (彻底替代原生系统弹窗 alert) ===
+  function showToast(message, type = "normal") {
+    const container = document.getElementById("xiuxian-toast-container");
+    if (!container) return;
+
+    const toast = document.createElement("div");
+    let icon = "✨";
+    let typeClass = "";
+    if (type === "blessing") {
+      icon = "🌟";
+      typeClass = "toast-blessing";
+    } else if (type === "danger" || type === "stolen") {
+      icon = "⚠️";
+      typeClass = "toast-danger";
+    } else if (type === "battle") {
+      icon = "⚔️";
+      typeClass = "toast-battle";
+    }
+
+    toast.className = `xiuxian-toast ${typeClass}`;
+    toast.innerHTML = `<span>${icon}</span><span>${message.replace(/\n/g, ' ')}</span>`;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.remove();
+    }, 2800);
+  }
+
   // === 计算角色综合八维属性 ===
   function calculateTotalAttributes() {
     const realm = REALMS[state.realmIndex];
@@ -733,7 +761,7 @@
     const cost = recipe.cost;
     for (let key in cost) {
       if ((state.resources[key] || 0) < cost[key]) {
-        alert(`原料不足！需要充足的资源才能开炉炼制。`);
+        showToast("原料不足！需要充足的资源才能开炉炼制", "danger");
         return;
       }
     }
@@ -771,7 +799,7 @@
           addLog(`【云端鉴权·开炉起胚】三昧真火炉鼎已就绪，天道核验成功！凝聚出「${tierData.name}(1层)·${recipe.name}」胚料！`, "blessing");
           return;
         } else {
-          alert(data.error || "开炉未成");
+          showToast(data.error || "开炉未成", "danger");
           return;
         }
       } catch (e) {
@@ -1002,12 +1030,87 @@
     }
   }
 
+  // 关闭锻造台弹窗 (自动停止连续锤击)
+  function closeAnvilModal() {
+    stopAutoForge();
+    const modal = document.getElementById("forge-anvil-modal");
+    if (modal) modal.classList.remove("active");
+  }
+
+  // 《寻道大千》全自动连续锤击系统
+  let autoForgeTimer = null;
+  let isAutoForging = false;
+
+  function stopAutoForge() {
+    if (autoForgeTimer) {
+      clearInterval(autoForgeTimer);
+      autoForgeTimer = null;
+    }
+    isAutoForging = false;
+    const btn = document.getElementById("auto-forge-btn");
+    if (btn) {
+      btn.innerText = "开启自动连锤";
+      btn.classList.remove("running");
+    }
+  }
+
+  function toggleAutoForge() {
+    if (isAutoForging) {
+      stopAutoForge();
+      showToast("已停止自动连锤", "normal");
+      return;
+    }
+
+    if (!anvilState.active) {
+      showToast("尚未开炉选定剑胚！", "danger");
+      return;
+    }
+
+    if (anvilState.layer >= 10) {
+      showToast("此神兵已达十层大圆满，请淬火收炉！", "blessing");
+      return;
+    }
+
+    const cost = getStrikeCost(anvilState.tier, anvilState.layer);
+    const hasMat = state.resources[cost.matKey] || 0;
+    const hasStones = state.spiritStones || 0;
+    if (hasMat < cost.count || hasStones < cost.stones) {
+      showToast("原料或灵石不足，无法开启连锤！", "danger");
+      return;
+    }
+
+    isAutoForging = true;
+    const btn = document.getElementById("auto-forge-btn");
+    if (btn) {
+      btn.innerText = "停止自动连锤 (进行中)";
+      btn.classList.add("running");
+    }
+    showToast("⚡ 自动连锤已启动！如临洞府仙境闭关顿悟……", "blessing");
+
+    // 立即打一锤，随后每 550ms 自动快速落锤 (寻道大千爽快节奏)
+    strikeAnvilHammer();
+    autoForgeTimer = setInterval(() => {
+      if (!isAutoForging || !anvilState.active || anvilState.layer >= 10) {
+        stopAutoForge();
+        return;
+      }
+      const c = getStrikeCost(anvilState.tier, anvilState.layer);
+      if ((state.resources[c.matKey] || 0) < c.count || (state.spiritStones || 0) < c.stones) {
+        stopAutoForge();
+        showToast("材料或灵石耗尽，自动连锤暂停", "danger");
+        return;
+      }
+      strikeAnvilHammer();
+    }, 550);
+  }
+
   // 核心：挥锤锻打 (向服务器发送权威请求，核验材料、经验、冲层与全服广播)
   async function strikeAnvilHammer() {
     if (!anvilState.active) return;
 
     if (anvilState.layer >= 10) {
-      alert("此神兵已达【一阶(10层)大圆满】极限造化，无法继续捶打，请立即「淬火收炉」！");
+      showToast("此神兵已达【一阶(10层)大圆满】极限造化，请收炉入库！", "blessing");
+      stopAutoForge();
       return;
     }
 
@@ -1016,11 +1119,13 @@
     const hasStones = state.spiritStones || 0;
 
     if (hasMat < cost.count) {
-      alert(`辅料不足！冲层锤打需要淬入【${cost.matName}×${cost.count}】以稳固真火剑胚，可在灵峰或洞府家园采矿获取！`);
+      showToast(`辅料不足！需【${cost.matName}×${cost.count}】，可在家园或灵峰开采`, "danger");
+      stopAutoForge();
       return;
     }
     if (hasStones < cost.stones) {
-      alert(`真元灵石不足！激发三昧真火需要【灵石×${cost.stones}】，可在打坐修炼或坊市获取！`);
+      showToast(`真元灵石不足！需【灵石×${cost.stones}】`, "danger");
+      stopAutoForge();
       return;
     }
 
@@ -1068,12 +1173,15 @@
           if (data.strikeSuccess) {
             if (anvilState.layer === 10) {
               addLog(`🌟【天道大吉】逆天改命！以权威服务器核准铸成「十层大圆满·${anvilState.recipe.name}」！！全服已通报！`, "blessing");
-              alert(`🌟【天地异象·大圆满神兵降世】\n\n天道服务器权威核准认证！\n成功铸就十层大圆满【${anvilState.recipe.name}】！\n战力：+${anvilState.power}！全服修士皆已感应祥瑞！`);
+              showToast(`🌟【大圆满神兵降世】成功铸就十层大圆满【${anvilState.recipe.name}】！战力 +${anvilState.power}！`, "blessing");
+              stopAutoForge();
             } else {
               addLog(`【权威百炼精进】成功冲入「${anvilState.layer}层」！阿尔比恩熟练度提升，战力提升至 +${anvilState.power}。`, "normal");
+              showToast(`冲层成功！升至【${anvilState.layer}层】，战力 +${anvilState.power}`, "blessing");
             }
           } else {
             addLog(`【淬火未进】火候略欠，未能冲入下一层，但道心专精熟练度仍有所增进！`, "normal");
+            showToast(`淬火未进，剑胚稳固未损`, "normal");
           }
 
           if (data.isWorldBroadcast && data.broadcastMsg) {
@@ -1085,7 +1193,8 @@
           renderAnvilUI();
           return;
         } else {
-          alert(data.error || "锤打失败");
+          showToast(data.error || "锤打未谐", "danger");
+          stopAutoForge();
           return;
         }
       } catch (e) {
@@ -1136,8 +1245,15 @@
         anvilState.stats[s] = Math.max(1, Math.floor(anvilState.recipe.stats[s] * layerGrowth * currentVariance));
       }
       addLog(`【百炼精进】成功精进至「一阶(${anvilState.layer}层)」！战力提升至 +${anvilState.power}。`, "normal");
+      if (anvilState.layer === 10) {
+        showToast(`🌟【十层大圆满】逆天改命铸成神兵！战力 +${anvilState.power}`, "blessing");
+        stopAutoForge();
+      } else {
+        showToast(`冲层成功！升至【${anvilState.layer}层】，战力 +${anvilState.power}`, "blessing");
+      }
     } else {
       addLog(`【淬火未进】未能冲入下一层，神胚稳固未损。`, "normal");
+      showToast(`火候微欠，剑胚稳固未损`, "normal");
     }
 
     saveGame();
@@ -1148,6 +1264,7 @@
   // 淬火收炉：正式生成神兵，烙印真名
   async function quenchAndFinishForge() {
     if (!anvilState.active) return;
+    stopAutoForge();
 
     if (authState && authState.token) {
       try {
@@ -1168,7 +1285,7 @@
           addLog(`【权威淬火出炉】道宝「${data.equipment.name}」已由天道服务器盖印真名入册！`, "blessing");
           saveGame();
           updateUI();
-          alert(`【淬火收炉·天道认证】\n\n法宝已由服务器权威入册：\n【${data.equipment.tierName}】【${data.equipment.quality}】${data.equipment.name}！\n最终战力：+${data.equipment.power}\n专属印记：${data.equipment.maker} 亲铸\n${data.equipment.affix ? `觉醒专属气运真言：【${data.equipment.affix.name}】(${data.equipment.affix.desc})` : ''}`);
+          showToast(`【淬火大吉】${data.equipment.name} 铸成入库！战力 +${data.equipment.power}`, "blessing");
           return;
         }
       } catch (e) {
@@ -1221,7 +1338,7 @@
     addLog(`【神兵收炉】亲铸神兵【${newEquip.name}】烙印真名：「${state.daoName} 亲铸」！`, "blessing");
     saveGame();
     updateUI();
-    alert(`【淬火收炉·大吉】\n【${newEquip.name}】已收入藏宝阁！战力+${newEquip.power}！`);
+    showToast(`【淬火收炉】神兵【${newEquip.name}】已收入藏宝阁！战力 +${newEquip.power}`, "blessing");
   }
 
   // 渲染藏宝阁
@@ -1423,12 +1540,12 @@
       state.realmIndex++;
       state.luck = Math.min(100, state.luck + 5);
       addLog(`【突破圆满】成功晋升至「${REALMS[state.realmIndex].name}」！道基大成。`, "blessing");
-      alert(`【突破成功】恭喜道友冲破玄关，晋升至「${REALMS[state.realmIndex].name}」！`);
+      showToast(`【突破大吉】恭喜道友晋升至「${REALMS[state.realmIndex].name}」！`, "blessing");
     } else {
       state.exp = Math.floor(state.exp * 0.85);
       state.luck = Math.max(10, state.luck - 8);
       addLog(`【渡劫受阻】心魔突起，破境未果，修为略有倒退。`, "stolen");
-      alert(`【渡劫失败】天道威压浩大，建议提升福缘后再尝试。`);
+      showToast(`渡劫受阻：心魔突起，建议提升福缘后再尝试`, "danger");
     }
 
     saveGame();
@@ -1562,10 +1679,10 @@
           state.spiritStones += 15;
           state.exp += 50;
           addLog(`【论道大捷】击败同门「${duelState.enemy.name}」，收获灵石+15、修为+50！`, "battle");
-          alert(`【论道大捷】你以高超道法击破「${duelState.enemy.name}」气机，赢得胜利！`);
+          showToast(`【论道大捷】击破「${duelState.enemy.name}」气机，获胜！`, "battle");
         } else {
           addLog(`【论道落败】不敌同门「${duelState.enemy.name}」，回洞府闭门思过。`, "normal");
-          alert(`【论道落败】同门「${duelState.enemy.name}」道法更胜一筹。`);
+          showToast(`【论道惜败】同门「${duelState.enemy.name}」略胜一筹`, "normal");
         }
         document.getElementById("duel-modal").classList.remove("active");
         saveGame();
@@ -1717,7 +1834,7 @@
       }
 
       state.extraction.currentEnemy = null;
-      alert(resultMsg);
+      showToast(`【大获全胜】击破「${enemy.name}」护体法罩，缴获大量灵宝！`, "blessing");
     } else {
       // 玩家战败：高风险惩罚
       resultMsg += `【战败受创】你真元枯竭，被「${enemy.name}」轰退十丈！\n`;
@@ -1734,9 +1851,11 @@
           state.inventory = state.inventory.filter(i => i.id !== targetEquip.id);
           resultMsg += `\n🚨【奇耻大辱·法宝被夺】对方冷笑斩断血脉契约，将你亲铸的【${targetEquip.name}】强行夺走！\n`;
           addLog(`【奇耻大辱】秘境战败，亲铸本命法宝「${targetEquip.name}」被同门「${enemy.name}」夺走！`, "stolen");
+          showToast(`【法宝被夺】亲铸「${targetEquip.name}」被同门夺走！`, "danger");
         } else {
           targetEquip.durability = Math.max(0, targetEquip.durability - 50);
           resultMsg += `\n• 你的法宝【${targetEquip.name}】器灵护主受创，耐久暴跌 50 点！需回百炼炉修缮。\n`;
+          showToast(`法宝「${targetEquip.name}」耐久暴跌50点`, "danger");
         }
       }
 
@@ -1749,7 +1868,7 @@
       document.getElementById("extraction-modal").classList.remove("active");
       saveGame();
       updateUI();
-      alert(resultMsg);
+      showToast(`秘境战败：本命心火被盗，临时储物袋洗劫一空！`, "danger");
       return;
     }
 
@@ -1757,13 +1876,9 @@
   }
 
   function extractionEscape() {
-    if (state.extraction.tempLoot.length === 0) {
-      if (!confirm("储物袋空空如也，确定现在撤离吗？")) return;
-    }
-
-    let report = "【安全撤离·满载而归】\n带回战利品：\n";
+    let report = "【安全撤离·满载而归】带回战利品：";
     state.extraction.tempLoot.forEach(item => {
-      report += `• ${item.name} ×${item.count}\n`;
+      report += ` ${item.name}×${item.count};`;
       if (item.type === "stones") state.spiritStones += item.count;
       else if (state.resources[item.type] !== undefined) state.resources[item.type] += item.count;
     });
@@ -1773,7 +1888,7 @@
     addLog(`【大捷归府】从太虚古墟成功撤离，带回大量珍稀矿植与灵宝！`, "blessing");
     saveGame();
     updateUI();
-    alert(report);
+    showToast(state.extraction.tempLoot.length > 0 ? report : "安全撤离出太虚古墟", "blessing");
   }
 
   // ==========================================
@@ -1939,7 +2054,7 @@
     const price = parseInt(priceInput.value, 10);
 
     if (!equipId || isNaN(price) || price <= 0) {
-      alert("请输入正确的寄售标价！");
+      showToast("请输入正确的寄售标价！", "danger");
       return;
     }
 
@@ -1967,20 +2082,18 @@
         saveGame();
         updateUI();
         fetchMarketItems();
-        alert(`【挂牌成功】您亲铸的法宝「${item.name}」已陈列于万宝楼坊市，标价 ${price} 灵石！`);
+        showToast(`【挂牌成功】「${item.name}」已陈列坊市，标价 ${price} 灵石`, "blessing");
       }
     } catch (e) {
-      alert("上架失败，网络微恙");
+      showToast("上架未成，网络微恙", "danger");
     }
   }
 
   async function buyMarketItem(marketItemId, price) {
     if (state.spiritStones < price) {
-      alert(`灵石不足！购买需 ${price} 灵石，当前仅有 ${state.spiritStones} 灵石。可通过挂机打坐、论道或秘境探索获取灵石。`);
+      showToast(`灵石不足！需要 ${price} 灵石，当前有 ${state.spiritStones}`, "danger");
       return;
     }
-
-    if (!confirm(`确认花费 ${price} 灵石买下该法宝吗？`)) return;
 
     try {
       const res = await fetch("/api/market/buy_item", {
@@ -1999,21 +2112,21 @@
         if (data.item_type === "equipment") {
           state.inventory.unshift(data.item_data);
           addLog(`【万宝楼得宝】花费 ${price} 灵石购得同门法宝「${data.item_data.name}」(${data.item_data.maker} 亲铸)！`, "blessing");
-          alert(`【购宝成功】法宝已收入您的【本命宝阁】！\n铭刻印信仍完好保留：「${data.item_data.maker} 亲铸」！`);
+          showToast(`【购宝成功】法宝「${data.item_data.name}」已收入藏宝阁！`, "blessing");
         } else {
           const mat = data.item_data;
           if (state.resources[mat.type] !== undefined) state.resources[mat.type] += mat.count;
           addLog(`【坊市购材】购入灵材「${mat.name} ×${mat.count}」！`, "blessing");
-          alert(`【购材成功】已收入洞府百工仓库！`);
+          showToast(`【购材成功】灵材已收入洞府百工仓库！`, "blessing");
         }
         saveGame();
         updateUI();
         fetchMarketItems();
       } else {
-        alert(data.error || "购买未成");
+        showToast(data.error || "购买未成", "danger");
       }
     } catch (e) {
-      alert("购买失败，通讯有阻");
+      showToast("购买失败，通讯有阻", "danger");
     }
   }
 
@@ -2097,10 +2210,10 @@
           updateUI();
           renderHomesteadView();
           addLog(`【洞府灵脉大成】一键收纳灵材：寒铁矿+${data.gains.ore}，青竹木+${data.gains.wood}，凝血芝+${data.gains.herb}！`, "blessing");
-          alert(`【灵脉收成大吉】\n寒铁矿: +${data.gains.ore}\n青竹木: +${data.gains.wood}\n凝血芝: +${data.gains.herb}\n已尽数归入洞府百工仓库！`);
+          showToast(`【灵脉丰收】寒铁+${data.gains.ore}，青竹+${data.gains.wood}，灵芝+${data.gains.herb}`, "blessing");
           return;
         } else {
-          alert(data.error || "灵脉积蓄未足");
+          showToast(data.error || "灵脉积蓄未足", "normal");
           return;
         }
       } catch (e) {
@@ -2126,7 +2239,7 @@
     updateUI();
     renderHomesteadView();
     addLog(`【洞府采收】收获矿石+${mineGain}，灵木+${forestGain}，仙草+${herbGain}！`, "blessing");
-    alert(`【灵脉收获】获得寒铁矿+${mineGain}，青竹木+${forestGain}，凝血芝+${herbGain}！`);
+    showToast(`【灵脉收获】寒铁+${mineGain}，青竹+${forestGain}，凝血芝+${herbGain}`, "blessing");
   }
 
   async function upgradeHomesteadFacility(facility) {
@@ -2135,7 +2248,7 @@
     const cost = curLvl * 30;
 
     if (state.spiritStones < cost) {
-      alert(`灵石不足！升级需要 ${cost} 灵石，当前仅有 ${state.spiritStones} 灵石。`);
+      showToast(`灵石不足！升级需要 ${cost} 灵石，当前仅有 ${state.spiritStones}`, "danger");
       return;
     }
 
@@ -2218,7 +2331,7 @@
 
   async function participateWorldContest(eventId) {
     if (!authState || !authState.token) {
-      alert("请先登录专属修行账号方可参与全服高阶素材争夺！");
+      showToast("请先登录专属修行账号方可参与全服争夺！", "danger");
       openAuthModal();
       return;
     }
@@ -2238,13 +2351,13 @@
         saveGame();
         updateUI();
         fetchWorldEvents();
-        alert(data.msg);
+        showToast(data.msg, data.win ? "blessing" : "danger");
         addLog(data.msg, data.win ? "blessing" : "stolen");
       } else {
-        alert(data.error || "争夺未果");
+        showToast(data.error || "争夺未果", "danger");
       }
     } catch (e) {
-      alert("全服气机震荡，通讯暂阻");
+      showToast("全服气机震荡，通讯暂阻", "danger");
     }
   }
 
@@ -2487,6 +2600,8 @@
     forgeItemByRecipe,
     strikeAnvilHammer,
     quenchAndFinishForge,
+    closeAnvilModal,
+    toggleAutoForge,
     openAuthModal,
     submitAuthRegister,
     submitAuthLogin,

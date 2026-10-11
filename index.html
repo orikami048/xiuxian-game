@@ -570,8 +570,9 @@
     <!-- 弹窗 5：百炼三昧锻造台 (挥锤锻打 · 1~10层气运冲击) -->
     <div id="forge-anvil-modal" class="modal-overlay">
       <div class="modal-content" style="background:#181411; border-color:#d4a34b; color:#f7f2e8; max-width:400px;">
-        <div class="modal-header" style="color:#d4a34b; border-color:#554838;">
-          🔥 三昧百炼锻台 · 气运冲层
+        <div class="modal-header" style="color:#d4a34b; border-color:#554838; display:flex; justify-content:space-between; align-items:center;">
+          <span>🔥 三昧百炼锻台 · 气运冲层</span>
+          <button style="background:transparent; border:none; color:#c9bea9; font-size:16px; cursor:pointer; padding:0 4px;" onclick="window.game.closeAnvilModal()">✕</button>
         </div>
 
         <!-- 锻造台视口 -->
@@ -644,6 +645,14 @@
               📦 淬火收炉 (入库)
             </button>
           </div>
+
+          <!-- 《寻道大千》全自动连续锤击模式开关 -->
+          <div class="auto-forge-panel">
+            <span style="color:#c9bea9;">⚡ 连打设定: 连续锤击至满层或原料耗尽</span>
+            <button id="auto-forge-btn" class="auto-forge-toggle-btn" onclick="window.game.toggleAutoForge()">
+              开启自动连锤
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -680,6 +689,9 @@
     </div>
 
   </div>
+
+  <!-- 《寻道大千》国风无阻断轻量 Toast 提示挂载点 -->
+  <div id="xiuxian-toast-container"></div>
 
   <script src="game.js"></script>
 </body>
