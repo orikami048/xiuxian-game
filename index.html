@@ -107,25 +107,25 @@
             <div class="char-slot-col">
               <div id="slot-head" class="char-slot-cell" onclick="window.game.openSlotInspect('head')">
                 <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('head')">✕</span>
-                <span class="slot-icon-text">👑</span>
+                <div class="equip-art-box" id="slot-art-head"></div>
                 <span class="slot-tag-label">【头】冠簪</span>
                 <span id="slot-name-head" class="slot-equip-name">空置</span>
               </div>
               <div id="slot-armor" class="char-slot-cell" onclick="window.game.openSlotInspect('armor')">
                 <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('armor')">✕</span>
-                <span class="slot-icon-text">🥋</span>
+                <div class="equip-art-box" id="slot-art-armor"></div>
                 <span class="slot-tag-label">【甲】法袍</span>
                 <span id="slot-name-armor" class="slot-equip-name">空置</span>
               </div>
               <div id="slot-hand" class="char-slot-cell" onclick="window.game.openSlotInspect('hand')">
                 <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('hand')">✕</span>
-                <span class="slot-icon-text">🧤</span>
+                <div class="equip-art-box" id="slot-art-hand"></div>
                 <span class="slot-tag-label">【手】护腕</span>
                 <span id="slot-name-hand" class="slot-equip-name">空置</span>
               </div>
               <div id="slot-foot" class="char-slot-cell" onclick="window.game.openSlotInspect('foot')">
                 <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('foot')">✕</span>
-                <span class="slot-icon-text">👢</span>
+                <div class="equip-art-box" id="slot-art-foot"></div>
                 <span class="slot-tag-label">【脚】法靴</span>
                 <span id="slot-name-foot" class="slot-equip-name">空置</span>
               </div>
@@ -145,25 +145,25 @@
             <div class="char-slot-col">
               <div id="slot-weapon" class="char-slot-cell" onclick="window.game.openSlotInspect('weapon')">
                 <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('weapon')">✕</span>
-                <span class="slot-icon-text">🗡️</span>
+                <div class="equip-art-box" id="slot-art-weapon"></div>
                 <span class="slot-tag-label">【武】飞剑</span>
                 <span id="slot-name-weapon" class="slot-equip-name">空置</span>
               </div>
               <div id="slot-offhand" class="char-slot-cell" onclick="window.game.openSlotInspect('offhand')">
                 <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('offhand')">✕</span>
-                <span class="slot-icon-text">🪞</span>
+                <div class="equip-art-box" id="slot-art-offhand"></div>
                 <span class="slot-tag-label">【副】法镜</span>
                 <span id="slot-name-offhand" class="slot-equip-name">空置</span>
               </div>
               <div id="slot-necklace" class="char-slot-cell" onclick="window.game.openSlotInspect('necklace')">
                 <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('necklace')">✕</span>
-                <span class="slot-icon-text">📿</span>
+                <div class="equip-art-box" id="slot-art-necklace"></div>
                 <span class="slot-tag-label">【链】灵佩</span>
                 <span id="slot-name-necklace" class="slot-equip-name">空置</span>
               </div>
               <div id="slot-ring" class="char-slot-cell" onclick="window.game.openSlotInspect('ring')">
                 <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('ring')">✕</span>
-                <span class="slot-icon-text">💍</span>
+                <div class="equip-art-box" id="slot-art-ring"></div>
                 <span class="slot-tag-label">【戒】须弥</span>
                 <span id="slot-name-ring" class="slot-equip-name">空置</span>
               </div>
@@ -585,11 +585,29 @@
             <!-- 10个层级刻度 -->
           </div>
 
-          <!-- 铁砧与剑胚舞台 -->
+          <!-- 铁砧与剑胚舞台 (包含巨型玄铁重锤与三昧真火飞溅粒子) -->
           <div class="anvil-stage" id="anvil-stage-stage">
             <div id="anvil-mult-box"></div>
-            <div id="anvil-ingot-icon" class="hot-ingot-core">🗡️</div>
-            <div style="font-size:10px; color:#ff9966; margin-top:6px;">三昧地火淬炼中</div>
+            <!-- 挥击玄铁神锤 -->
+            <div class="forge-hammer-entity" id="forge-hammer-tool">
+              <svg viewBox="0 0 100 100" class="forge-hammer-svg">
+                <!-- 锤柄 -->
+                <line x1="30" y1="75" x2="68" y2="35" stroke="#7a4e25" stroke-width="8" stroke-linecap="round"/>
+                <line x1="28" y1="77" x2="38" y2="67" stroke="#d4a34b" stroke-width="9" stroke-linecap="round"/>
+                <!-- 锤头 -->
+                <polygon points="55,18 85,48 72,60 42,30" fill="#2d2926" stroke="#c9bea9" stroke-width="2.5"/>
+                <rect x="58" y="24" width="22" height="12" transform="rotate(45 58 24)" fill="#ffaa00" opacity="0.6"/>
+                <!-- 符文雕刻 -->
+                <circle cx="64" cy="39" r="3" fill="#ff4400"/>
+              </svg>
+            </div>
+            <!-- 铁砧台基底 -->
+            <div class="anvil-stone-base"></div>
+            <!-- 剑胚/装备核心 -->
+            <div id="anvil-ingot-icon" class="hot-ingot-core"></div>
+            <!-- 火星飞溅画布 -->
+            <canvas id="anvil-sparks-canvas" width="280" height="130"></canvas>
+            <div style="font-size:10px; color:#ff9966; margin-top:6px; z-index:2;">三昧地火淬炼中</div>
           </div>
 
           <!-- 属性与突破概率 -->

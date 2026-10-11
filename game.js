@@ -29,6 +29,109 @@
     ring: { name: "指环", icon: "💍", desc: "乾坤须弥" }
   };
 
+  // 国风纯矢量装备图宝库 (按8大槽位专属定制，支持不同品质与阶位色泽)
+  const EQUIP_SVG_ICONS = {
+    weapon: (color = "#d4a34b") => `
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- 剑刃流光 -->
+        <path d="M48 6L58 16L30 44L20 44L20 34L48 6Z" fill="${color}" stroke="#1c1813" stroke-width="2"/>
+        <line x1="24" y1="40" x2="52" y2="12" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- 剑格与护手 -->
+        <path d="M14 42L26 30L28 32L16 44Z" fill="#8c7c64" stroke="#1c1813" stroke-width="1.5"/>
+        <path d="M22 50L34 38L32 36L20 48Z" fill="#8c7c64" stroke="#1c1813" stroke-width="1.5"/>
+        <!-- 剑柄与剑首 -->
+        <line x1="18" y1="46" x2="8" y2="56" stroke="#5a432b" stroke-width="4.5" stroke-linecap="round"/>
+        <circle cx="8" cy="56" r="3.5" fill="${color}" stroke="#1c1813" stroke-width="1.5"/>
+        <!-- 灵气粒子 -->
+        <circle cx="50" cy="10" r="1.5" fill="#ffffff"/>
+      </svg>
+    `,
+    armor: (color = "#d4a34b") => `
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- 道袍主身 -->
+        <path d="M20 12L32 18L44 12L52 24L44 28L42 54L22 54L20 28L12 24L20 12Z" fill="#322a22" stroke="${color}" stroke-width="2"/>
+        <!-- 阴阳对襟 -->
+        <path d="M32 18L26 36L32 54L38 36L32 18Z" fill="#f4eee2" opacity="0.3"/>
+        <line x1="32" y1="18" x2="32" y2="54" stroke="${color}" stroke-width="1.5"/>
+        <!-- 护心宝镜 -->
+        <circle cx="32" cy="28" r="5" fill="${color}" stroke="#ffffff" stroke-width="1"/>
+      </svg>
+    `,
+    head: (color = "#d4a34b") => `
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- 仙冠法髻 -->
+        <path d="M14 40C16 26 22 16 32 12C42 16 48 26 50 40C42 43 22 43 14 40Z" fill="#2d261e" stroke="${color}" stroke-width="2"/>
+        <!-- 碧玉流云发簪横穿 -->
+        <line x1="8" y1="28" x2="56" y2="28" stroke="${color}" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="10" cy="28" r="4" fill="#2b7a5a" stroke="#fff" stroke-width="1"/>
+        <!-- 冠顶明珠 -->
+        <circle cx="32" cy="14" r="3.5" fill="#ffffff" stroke="${color}" stroke-width="1.5"/>
+      </svg>
+    `,
+    hand: (color = "#d4a34b") => `
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- 护腕铁甲 -->
+        <rect x="18" y="18" width="28" height="30" rx="6" fill="#2d2720" stroke="${color}" stroke-width="2"/>
+        <!-- 缠手绑带与铜钉 -->
+        <line x1="18" y1="28" x2="46" y2="28" stroke="#8c7c64" stroke-width="2"/>
+        <line x1="18" y1="38" x2="46" y2="38" stroke="#8c7c64" stroke-width="2"/>
+        <circle cx="25" cy="33" r="2" fill="${color}"/>
+        <circle cx="39" cy="33" r="2" fill="${color}"/>
+        <polygon points="32,22 36,25 32,28 28,25" fill="#ff4400"/>
+      </svg>
+    `,
+    foot: (color = "#d4a34b") => `
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- 踏云飞靴 -->
+        <path d="M22 14L34 14L34 36L48 44C48 48 44 52 38 52L18 52C16 46 18 36 22 14Z" fill="#28221b" stroke="${color}" stroke-width="2"/>
+        <!-- 祥云纹路 -->
+        <path d="M26 44C30 40 38 42 42 46" stroke="${color}" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="44" cy="46" r="2" fill="#fff"/>
+      </svg>
+    `,
+    offhand: (color = "#d4a34b") => `
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- 八卦灵镜边框 -->
+        <polygon points="32,10 48,16 54,32 48,48 32,54 16,48 10,32 16,16" fill="#241e17" stroke="${color}" stroke-width="2.5"/>
+        <!-- 镜心神光 -->
+        <circle cx="32" cy="32" r="12" fill="#f4eee2" opacity="0.6"/>
+        <circle cx="32" cy="32" r="8" fill="#1c1813" stroke="${color}" stroke-width="1"/>
+        <circle cx="32" cy="32" r="3" fill="#ffffff"/>
+      </svg>
+    `,
+    necklace: (color = "#d4a34b") => `
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- 灵珠项链圆弧 -->
+        <path d="M14 18C18 38 46 38 50 18" stroke="#8c7c64" stroke-width="2" stroke-linecap="round"/>
+        <!-- 吊坠本命灵佩 -->
+        <polygon points="32,32 40,42 32,54 24,42" fill="#2b7a5a" stroke="${color}" stroke-width="2"/>
+        <circle cx="32" cy="43" r="2.5" fill="#ffffff"/>
+      </svg>
+    `,
+    ring: (color = "#d4a34b") => `
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- 须弥戒环 -->
+        <ellipse cx="32" cy="36" rx="16" ry="12" fill="none" stroke="${color}" stroke-width="4"/>
+        <ellipse cx="32" cy="36" rx="11" ry="8" fill="#1c1813" opacity="0.4"/>
+        <!-- 须弥嵌宝 -->
+        <polygon points="32,16 38,24 32,30 26,24" fill="#a63126" stroke="#fff" stroke-width="1.2"/>
+        <circle cx="32" cy="23" r="1.5" fill="#ffd700"/>
+      </svg>
+    `
+  };
+
+  function getEquipSvgIcon(slotKey, qualityClass = "") {
+    let color = "#d4a34b";
+    if (qualityClass === "quality-xian") color = "#ff3300";
+    else if (qualityClass === "quality-bao") color = "#b842ff";
+    else if (qualityClass === "quality-xuan") color = "#2080f0";
+    else if (qualityClass === "quality-ling") color = "#2b7a5a";
+    else if (qualityClass === "quality-fan") color = "#8c7c64";
+
+    const fn = EQUIP_SVG_ICONS[slotKey] || EQUIP_SVG_ICONS.weapon;
+    return fn(color);
+  }
+
   // 三阶修仙装备图鉴与百炼配方
   const TIER_RECIPES = {
     1: {
@@ -335,6 +438,7 @@
     Object.keys(SLOT_CONFIG).forEach(slotKey => {
       const cell = document.getElementById(`slot-${slotKey}`);
       const nameEl = document.getElementById(`slot-name-${slotKey}`);
+      const artEl = document.getElementById(`slot-art-${slotKey}`);
       if (!cell || !nameEl) return;
 
       // 清除旧的动态光晕
@@ -352,9 +456,15 @@
 
         nameEl.innerText = item.name;
         nameEl.style.color = item.qualityClass === "quality-xian" ? "#a63126" : item.qualityClass === "quality-bao" ? "#8430b8" : "#2b7a5a";
+        if (artEl) {
+          artEl.innerHTML = getEquipSvgIcon(slotKey, item.qualityClass);
+        }
       } else {
         nameEl.innerText = "空置";
         nameEl.style.color = "var(--text-muted)";
+        if (artEl) {
+          artEl.innerHTML = `<span style="opacity:0.35;">${getEquipSvgIcon(slotKey, 'quality-fan')}</span>`;
+        }
       }
     });
   }
@@ -373,13 +483,20 @@
     if (currentItem) {
       currentBox.innerHTML = `
         <div class="equip-card" style="margin:0;">
-          <div class="equip-title">
-            <span>
-              <span class="tier-tag ${currentItem.tierTag || 'tier-1'}">${currentItem.tierName || '一阶·炼气'}</span>
-              <span class="item-badge ${currentItem.qualityClass}">${currentItem.quality}</span>
-              <b style="margin-left:4px;">${currentItem.name}</b>
-            </span>
-            <span style="color:#a63126; font-size:12px;">战力 +${currentItem.power}</span>
+          <div class="equip-title" style="align-items:flex-start;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="equip-art-box" style="width:34px; height:34px; background:#fffcf7; border:1px solid #c9bea9; border-radius:6px; padding:3px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                ${getEquipSvgIcon(currentItem.slot, currentItem.qualityClass)}
+              </div>
+              <div>
+                <div>
+                  <span class="tier-tag ${currentItem.tierTag || 'tier-1'}">${currentItem.tierName || '一阶·炼气'}</span>
+                  <span class="item-badge ${currentItem.qualityClass}">${currentItem.quality}</span>
+                  <b style="margin-left:4px;">${currentItem.name}</b>
+                </div>
+                <div style="color:#a63126; font-size:11px; margin-top:2px;">战力 +${currentItem.power}</div>
+              </div>
+            </div>
           </div>
           <div class="equip-stats">
             <span>耐久: ${currentItem.durability}/${currentItem.maxDurability}</span>
@@ -412,12 +529,17 @@
         const row = document.createElement("div");
         row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#fffcf7; border:1px solid #c9bea9; border-radius:6px; padding:6px 8px;";
         row.innerHTML = `
-          <div>
-            <div style="font-size:11px; font-weight:bold;">
-              <span class="tier-tag ${cand.tierTag || 'tier-1'}">${cand.tierName || '一阶'}</span>
-              <span>${cand.name}</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="equip-art-box" style="width:26px; height:26px; background:#fffcf7; border:1px solid #c9bea9; border-radius:4px; padding:2px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              ${getEquipSvgIcon(cand.slot, cand.qualityClass)}
             </div>
-            <div style="font-size:9px; color:#888;">战力+${cand.power} · ${cand.maker} 亲铸</div>
+            <div>
+              <div style="font-size:11px; font-weight:bold;">
+                <span class="tier-tag ${cand.tierTag || 'tier-1'}">${cand.tierName || '一阶'}</span>
+                <span>${cand.name}</span>
+              </div>
+              <div style="font-size:9px; color:#888;">战力+${cand.power} · ${cand.maker} 亲铸</div>
+            </div>
           </div>
           <button class="action-btn primary" onclick="window.game.equipItemFromInspect('${cand.id}')">穿戴</button>
         `;
@@ -546,13 +668,18 @@
       if (itemRecipe.cost.herb_rare) costTexts.push(`玉芝×${itemRecipe.cost.herb_rare}`);
 
       card.innerHTML = `
-        <div>
-          <div style="font-size:12px; font-weight:bold;">
-            <span class="tier-tag ${tierData.tierTag}">${tierData.name}</span>
-            <span>${cfg.icon} 亲铸·${itemRecipe.name}</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div class="equip-art-box" style="width:28px; height:28px; background:#fffcf7; border:1px solid #c9bea9; border-radius:6px; padding:2px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            ${getEquipSvgIcon(itemRecipe.slot, state.currentForgeTier === 3 ? 'quality-bao' : (state.currentForgeTier === 2 ? 'quality-xuan' : 'quality-ling'))}
           </div>
-          <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">
-            需: ${costTexts.join(", ")}
+          <div>
+            <div style="font-size:12px; font-weight:bold;">
+              <span class="tier-tag ${tierData.tierTag}">${tierData.name}</span>
+              <span>亲铸·${itemRecipe.name}</span>
+            </div>
+            <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">
+              需: ${costTexts.join(", ")}
+            </div>
           </div>
         </div>
         <button class="action-btn gold" onclick="window.game.forgeItemByRecipe(${state.currentForgeTier || 1}, ${index})">开炉亲铸</button>
@@ -707,13 +834,111 @@
     }
   }
 
+  // 物理火花粒子系统
+  let sparkParticles = [];
+  let sparkAnimId = null;
+
+  function spawnAnvilSparks() {
+    const canvas = document.getElementById("anvil-sparks-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const originX = canvas.width / 2;
+    const originY = canvas.height / 2 + 15;
+
+    // 每次捶击激发出 25~35 颗高能流火火星
+    for (let i = 0; i < 30; i++) {
+      const angle = (Math.random() * Math.PI) + Math.PI; // 向上方扇形喷射
+      const speed = 2.5 + Math.random() * 6.5;
+      sparkParticles.push({
+        x: originX + (Math.random() * 20 - 10),
+        y: originY + (Math.random() * 10 - 5),
+        vx: Math.cos(angle) * speed * (0.8 + Math.random() * 0.8),
+        vy: Math.sin(angle) * speed,
+        size: 1.5 + Math.random() * 2.5,
+        color: Math.random() > 0.4 ? "#ffd700" : (Math.random() > 0.5 ? "#ff5500" : "#ffffff"),
+        alpha: 1,
+        life: 20 + Math.floor(Math.random() * 15)
+      });
+    }
+
+    if (!sparkAnimId) {
+      animateSparks();
+    }
+  }
+
+  function animateSparks() {
+    const canvas = document.getElementById("anvil-sparks-canvas");
+    if (!canvas) {
+      sparkAnimId = null;
+      return;
+    }
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = sparkParticles.length - 1; i >= 0; i--) {
+      const p = sparkParticles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.28; // 重力下坠
+      p.alpha -= 0.035;
+      p.life--;
+
+      if (p.life <= 0 || p.alpha <= 0) {
+        sparkParticles.splice(i, 1);
+        continue;
+      }
+
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.fillStyle = p.color;
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    if (sparkParticles.length > 0) {
+      sparkAnimId = requestAnimationFrame(animateSparks);
+    } else {
+      sparkAnimId = null;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  // 触发物理重锤挥击与受击变形
+  function triggerHammerStrikeVisuals() {
+    const hammerEl = document.getElementById("forge-hammer-tool");
+    if (hammerEl) {
+      hammerEl.classList.remove("swing-hammer");
+      void hammerEl.offsetWidth; // 触发 reflow 重置动画
+      hammerEl.classList.add("swing-hammer");
+    }
+
+    // 锤头击打在剑胚上的受力瞬间 (约130ms后) 触发受击压扁与火星四溅
+    setTimeout(() => {
+      const ingotEl = document.getElementById("anvil-ingot-icon");
+      if (ingotEl) {
+        ingotEl.classList.remove("hit-squash");
+        void ingotEl.offsetWidth;
+        ingotEl.classList.add("hit-squash");
+      }
+      spawnAnvilSparks();
+    }, 130);
+  }
+
   function renderAnvilUI() {
     if (!anvilState.active) return;
     const recipe = anvilState.recipe;
     const cfg = SLOT_CONFIG[recipe.slot];
 
     document.getElementById("anvil-item-name").innerText = `${recipe.name} (${cfg.name})`;
-    document.getElementById("anvil-ingot-icon").innerText = cfg.icon;
+    const qualityClass = anvilState.layer === 10 ? 'quality-xian' : (anvilState.layer >= 7 ? 'quality-bao' : (anvilState.layer >= 4 ? 'quality-xuan' : 'quality-ling'));
+    const ingotEl = document.getElementById("anvil-ingot-icon");
+    if (ingotEl) {
+      ingotEl.innerHTML = getEquipSvgIcon(recipe.slot, qualityClass);
+    }
 
     // 渲染 1~10 层指示刻度
     const stepper = document.getElementById("anvil-layer-stepper");
@@ -799,11 +1024,16 @@
       return;
     }
 
+    // 物理挥锤、火花飞溅与受击变形动效
+    triggerHammerStrikeVisuals();
+
     // 挥锤震屏微动效
     const chamber = document.getElementById("anvil-chamber-box");
-    chamber.classList.remove("anvil-strike");
-    void chamber.offsetWidth;
-    chamber.classList.add("anvil-strike");
+    if (chamber) {
+      chamber.classList.remove("anvil-strike");
+      void chamber.offsetWidth;
+      chamber.classList.add("anvil-strike");
+    }
 
     // 权威服务器处理
     if (authState && authState.token) {
@@ -1011,14 +1241,21 @@
       card.className = "equip-card";
 
       card.innerHTML = `
-        <div class="equip-title">
-          <span>
-            <span class="tier-tag ${item.tierTag || 'tier-1'}">${item.tierName || '一阶·炼气'}</span>
-            <span class="item-badge ${item.qualityClass}">${item.quality}</span>
-            <span style="margin-left:4px;">${item.name}</span>
-            ${isEquipped ? '<span style="color:#2b7a5a; font-size:11px; margin-left:4px;">[已佩戴]</span>' : ''}
-          </span>
-          <span style="color:#a63126; font-size:12px;">战力 +${item.power}</span>
+        <div class="equip-title" style="align-items:flex-start;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="equip-art-box" style="width:34px; height:34px; background:#fffcf7; border:1px solid #c9bea9; border-radius:6px; padding:3px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              ${getEquipSvgIcon(item.slot, item.qualityClass)}
+            </div>
+            <div>
+              <div>
+                <span class="tier-tag ${item.tierTag || 'tier-1'}">${item.tierName || '一阶·炼气'}</span>
+                <span class="item-badge ${item.qualityClass}">${item.quality}</span>
+                <span style="margin-left:4px; font-weight:bold;">${item.name}</span>
+                ${isEquipped ? '<span style="color:#2b7a5a; font-size:11px; margin-left:4px;">[已佩戴]</span>' : ''}
+              </div>
+              <div style="color:#a63126; font-size:11px; margin-top:2px;">战力 +${item.power}</div>
+            </div>
+          </div>
         </div>
         <div class="equip-stats">
           <span>部位: ${SLOT_CONFIG[item.slot] ? SLOT_CONFIG[item.slot].name : item.slot}</span>
