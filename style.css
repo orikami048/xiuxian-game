@@ -230,6 +230,124 @@ body {
   100% { filter: drop-shadow(0 0 10px #ffd700) brightness(1.2); }
 }
 
+/* ============================================================
+   === 方案 A：1024 满血高清原画母版 · 骨骼微动效与残影劈砍 ===
+   ============================================================ */
+.anime-girl-anvil-stage {
+  height: 250px !important;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: radial-gradient(circle at 45% 65%, #35261d 0%, #15110e 100%);
+  border: 1px solid #4a3e30;
+  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.8);
+}
+
+.hd-girl-forge-viewport {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* 炉火温润微光脉冲 */
+.forge-fire-pulse {
+  position: absolute;
+  left: 12%;
+  top: 30%;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(255, 120, 20, 0.4) 0%, rgba(255, 50, 0, 0) 70%);
+  animation: fireGlowPulse 2.2s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes fireGlowPulse {
+  0% { transform: scale(0.92); opacity: 0.7; }
+  100% { transform: scale(1.18); opacity: 1; }
+}
+
+/* 1024 高清原画母版容器 (待机微呼吸) */
+.hd-girl-canvas-stage {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  transform-origin: 50% 90%;
+  animation: hdGirlBreathe 3.2s ease-in-out infinite alternate;
+}
+
+@keyframes hdGirlBreathe {
+  0% { transform: translateY(0px) scale(1); }
+  100% { transform: translateY(2px) scale(1.008, 0.992); }
+}
+
+/* 挥锤重击时：身体沉稳下沉 + 顿挫回弹 */
+.hd-girl-canvas-stage.smash-strike {
+  animation: hdGirlSmashImpact 0.42s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+@keyframes hdGirlSmashImpact {
+  0% { transform: translateY(-6px) rotate(-1.5deg) scale(0.98, 1.02); }
+  35% { transform: translateY(8px) rotate(1.2deg) scale(1.03, 0.97); }
+  60% { transform: translateY(4px) rotate(0.5deg) scale(1.01, 0.99); }
+  100% { transform: translateY(0px) rotate(0deg) scale(1, 1); }
+}
+
+/* 1024 无损原画本体图片 (零压缩，保全所有发丝眼睛细节) */
+.hd-girl-master-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.65));
+}
+
+/* 神锤流光残影层 */
+.hd-hammer-trail-layer {
+  position: absolute;
+  top: 15px;
+  left: 60px;
+  width: 110px;
+  height: 140px;
+  pointer-events: none;
+  z-index: 8;
+  opacity: 0;
+  background: radial-gradient(ellipse at 40% 30%, rgba(0, 229, 255, 0.8) 0%, rgba(255, 215, 0, 0.6) 40%, rgba(255, 80, 0, 0) 80%);
+  border-radius: 50%;
+  transform: rotate(35deg);
+}
+
+.hd-hammer-trail-layer.active-sweep {
+  animation: hammerTrailSweep 0.38s ease-out;
+}
+
+@keyframes hammerTrailSweep {
+  0% { opacity: 0; transform: rotate(-20deg) scale(0.6); }
+  25% { opacity: 1; transform: rotate(45deg) scale(1.3); filter: brightness(2) drop-shadow(0 0 20px #00e5ff); }
+  60% { opacity: 0.6; transform: rotate(50deg) translate(10px, 20px) scale(1.1); }
+  100% { opacity: 0; transform: rotate(45deg) translate(15px, 30px) scale(0.8); }
+}
+
+/* 剑胚受击光斑点 */
+.hd-ingot-impact-center {
+  position: absolute;
+  bottom: 60px;
+  left: 48%;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  z-index: 10;
+}
+
 /* 骨骼打铁小人 (Spine-Style Procedural Skeleton Puppet) */
 .forge-blacksmith-puppet {
   position: absolute;
@@ -349,56 +467,196 @@ body {
   50% { transform: scale(1.04); }
 }
 
-/* 打坐核心互动区（太极转盘） */
+/* 打坐核心互动区：太虚灵境·真像素大场景舞台 (参考 Pixel Quest 全景重构) */
 .cultivation-circle-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 16px 0 8px;
+  padding: 6px 0 8px;
   position: relative;
 }
 
-.taiji-wrapper {
-  width: 150px;
-  height: 150px;
+/* 像素风顶衔标签 */
+.pixel-realm-banner {
+  margin-bottom: 6px;
+  z-index: 8;
+}
+
+.pixel-realm-banner-tag {
+  background: #1f1d19;
+  color: #ffd591;
+  border: 1px solid #d4a34b;
+  border-radius: 4px;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.meditation-stage-box {
+  width: 250px;
+  height: 215px;
   position: relative;
-  border-radius: 50%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #3c3226;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  user-select: none;
+  background: #0c101d;
   transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.taiji-wrapper:active {
-  transform: scale(0.92);
+.meditation-stage-box:active {
+  transform: scale(0.97);
 }
 
-.taiji-ring {
+/* 全景像素动态环境底布 (星夜/仙山/松林/灵池/放射神光) */
+.pixel-realm-canvas {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  border-radius: 50%;
-  border: 2px dashed rgba(140, 124, 100, 0.5);
-  animation: rotateSlow 24s linear infinite;
-}
-
-.taiji-canvas {
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-}
-
-.taiji-text {
-  position: absolute;
-  font-size: 14px;
-  font-weight: bold;
-  color: #1a1612;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
   pointer-events: none;
-  margin-top: 45px;
+  z-index: 1;
+}
+
+/* 背景旋转八卦青莲法阵 */
+.celestial-lotus-ring {
+  position: absolute;
+  bottom: 12px;
+  width: 180px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(64, 169, 255, 0.5);
+  box-shadow: 0 0 20px rgba(24, 144, 255, 0.35);
+  animation: rotateSlow 24s linear infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* 灵气粒子光晕 */
+.meditation-qi-aura {
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(105, 192, 255, 0.25) 0%, rgba(24, 144, 255, 0) 70%);
+  animation: qiAuraPulse 3s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes qiAuraPulse {
+  0% { transform: scale(0.92); opacity: 0.6; }
+  100% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 15px rgba(64, 169, 255, 0.6)); }
+}
+
+/* 纯正真像素 8 帧动画精灵机 (闭合硬描边 + 灵境背光轮廓，彻底与背景分离) */
+.true-pixel-meditation-sprite {
+  width: 200px;
+  height: 200px;
+  background-image: url('textures/meditation_sheet_96x96_clean.png');
+  background-repeat: no-repeat;
+  background-size: 1600px 200px; /* 8 帧 x 200px = 1600px */
+  background-position: 0px 0px;  /* 待机结印 */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  /* 关键：取消发黑的黑色阴影，改用幽蓝/冰晶仙韵轮廓光 (Rim Light)，让黑色描边极其清爽！ */
+  filter: drop-shadow(0 0 8px rgba(64, 169, 255, 0.45));
+  z-index: 5;
+  transition: transform 0.1s ease;
+  animation: truePixelIdleBreathe 3.2s ease-in-out infinite alternate;
+}
+
+@keyframes truePixelIdleBreathe {
+  0% { transform: translateY(0px) scale(1); }
+  100% { transform: translateY(-4px) scale(1.02); }
+}
+
+/* 8 帧关键帧类 (步长 200px) */
+.true-pixel-meditation-sprite.frame-0 { background-position: 0px 0px; }       /* 1: 平静结印 */
+.true-pixel-meditation-sprite.frame-1 { background-position: -200px 0px; }    /* 2: 灵息微聚 */
+.true-pixel-meditation-sprite.frame-2 { background-position: -400px 0px; }    /* 3: 灵光渐起 */
+.true-pixel-meditation-sprite.frame-3 { background-position: -600px 0px; }    /* 4: 真气凝聚 */
+.true-pixel-meditation-sprite.frame-4 { background-position: -800px 0px; }    /* 5: 银发飘舞 */
+.true-pixel-meditation-sprite.frame-5 { background-position: -1000px 0px; }   /* 6: 青莲灵环扩散 */
+.true-pixel-meditation-sprite.frame-6 { background-position: -1200px 0px; }   /* 7: 额生金印 */
+.true-pixel-meditation-sprite.frame-7 { background-position: -1400px 0px; }   /* 8: 天人合一 */
+
+.true-pixel-meditation-sprite.pulse-hit {
+  transform: scale(0.95);
+  filter: brightness(1.25) drop-shadow(0 0 16px rgba(64, 169, 255, 0.9));
+}
+
+/* 周天吐纳灵气涟漪圈 */
+.hd-meditation-qi-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%;
+  border: 2px solid rgba(64, 169, 255, 0.8);
+  box-shadow: 0 0 15px rgba(64, 169, 255, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.hd-meditation-qi-ripple.ripple-active {
+  animation: qiRippleExpand 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
+.hd-meditation-qi-ripple.ripple-crit {
+  border-color: rgba(255, 215, 0, 0.95);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+  animation: qiRippleExpand 0.75s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes qiRippleExpand {
+  0% {
+    width: 30px;
+    height: 30px;
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0.9;
+  }
+  100% {
+    width: 240px;
+    height: 240px;
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0;
+  }
+}
+
+/* 浮空操作药丸徽章 */
+.meditation-interact-badge {
+  position: absolute;
+  bottom: 6px;
+  background: rgba(30, 24, 18, 0.85);
+  border: 1px solid #d4a34b;
+  border-radius: 12px;
+  padding: 3px 12px;
+  font-size: 11px;
+  color: #ffd700;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  z-index: 8;
+  pointer-events: none;
+  animation: badgeFloat 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes badgeFloat {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-3px); }
 }
 
 @keyframes rotateSlow {
@@ -557,12 +815,60 @@ body {
   color: #554838;
 }
 
-.quality-fan { color: #555; border: 1px solid #ccc; }
-.quality-ling { color: #2b7a5a; border: 1px solid #2b7a5a; background: #eaf5f0; }
-.quality-xuan { color: #1e5ba0; border: 1px solid #1e5ba0; background: #ebf3fb; }
-.quality-bao { color: #8430b8; border: 1px solid #8430b8; background: #f6edfa; }
-.quality-xian { color: #c93b2b; border: 1px solid #c93b2b; background: #faecea; }
-.quality-shen { color: #d48806; border: 1px solid #d48806; background: #fffbe6; }
+/* === 10 阶修仙装备品质徽章与对应背景粒子流光系统 === */
+.quality-fan   { color: #666666; border: 1px solid #aaaaaa; background: #f0f0f0; } /* 1: 凡品 灰白微屑 */
+.quality-liang { color: #389e0d; border: 1px solid #52c41a; background: #f6ffed; } /* 2: 良品 苍翠草木 */
+.quality-ling  { color: #08979c; border: 1px solid #13c2c2; background: #e6fffb; } /* 3: 灵品 碧灵温玉 */
+.quality-xuan  { color: #0958d9; border: 1px solid #1677ff; background: #e6f4ff; } /* 4: 玄品 幽蓝寒铁 */
+.quality-di    { color: #ad6800; border: 1px solid #d48806; background: #fffbe6; } /* 5: 地品 地脉厚土 */
+.quality-tian  { color: #531dab; border: 1px solid #722ed1; background: #f9f0ff; } /* 6: 天品 紫霄天罡 */
+.quality-bao   { color: #c41d7f; border: 1px solid #eb2f96; background: #fff0f6; } /* 7: 宝品 琉璃琼霞 */
+.quality-xian  { color: #cf1322; border: 1px solid #f5222d; background: #fff1f0; } /* 8: 仙品 朱雀真炎 */
+.quality-shen  { color: #d46b08; border: 1px solid #fa8c16; background: #fff7e6; } /* 9: 神品 太古金芒 */
+.quality-chaos { color: #722ed1; border: 1px solid #be50ff; background: linear-gradient(135deg, #f9f0ff 0%, #e6fffb 50%, #fffbe6 100%); font-weight: bold; } /* 10: 混沌 鸿蒙极光 */
+
+/* 10 阶槽位外框流光光晕 (内敛道蕴 + 背景粒子色品阶框) */
+.char-slot-cell.slot-glow-fan   { border-color: #555e6d !important; }
+.char-slot-cell.slot-glow-liang { border-color: #52c41a !important; box-shadow: inset 0 0 6px rgba(82, 196, 26, 0.25), 0 0 6px rgba(82, 196, 26, 0.35); }
+.char-slot-cell.slot-glow-ling  { border-color: #13c2c2 !important; box-shadow: inset 0 0 7px rgba(19, 194, 194, 0.28), 0 0 7px rgba(19, 194, 194, 0.4); }
+.char-slot-cell.slot-glow-xuan  { border-color: #1677ff !important; box-shadow: inset 0 0 8px rgba(22, 119, 255, 0.3), 0 0 8px rgba(22, 119, 255, 0.45); }
+.char-slot-cell.slot-glow-di    { border-color: #d48806 !important; box-shadow: inset 0 0 8px rgba(212, 136, 6, 0.3), 0 0 8px rgba(212, 136, 6, 0.45); }
+.char-slot-cell.slot-glow-tian  { border-color: #722ed1 !important; box-shadow: inset 0 0 9px rgba(114, 46, 209, 0.32), 0 0 9px rgba(114, 46, 209, 0.5); }
+.char-slot-cell.slot-glow-bao   { border-color: #eb2f96 !important; box-shadow: inset 0 0 9px rgba(235, 47, 150, 0.35), 0 0 10px rgba(235, 47, 150, 0.5); }
+.char-slot-cell.slot-glow-xian  { border-color: #f5222d !important; box-shadow: inset 0 0 10px rgba(245, 34, 45, 0.35), 0 0 10px rgba(245, 34, 45, 0.5); }
+.char-slot-cell.slot-glow-shen  { border-color: #faad14 !important; box-shadow: inset 0 0 12px rgba(250, 173, 20, 0.4), 0 0 12px rgba(250, 173, 20, 0.55); }
+.char-slot-cell.slot-glow-chaos { border-color: #be50ff !important; box-shadow: inset 0 0 14px rgba(190, 80, 255, 0.4), 0 0 14px rgba(190, 80, 255, 0.6), 0 0 20px rgba(19, 194, 194, 0.3); }
+
+/* 10 阶纯正像素装备图标渲染体系 (56x56 大图标充分展现 96x96 高清像素细节) */
+.pixel-equip-icon {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.65));
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.char-slot-cell:hover .pixel-equip-icon,
+.equip-card:hover .pixel-equip-icon {
+  transform: scale(1.12);
+}
+.char-slot-cell.filled .pixel-equip-icon {
+  animation: equipIconFloat 3.2s ease-in-out infinite;
+}
+
+/* 10 阶背景粒子微光层 */
+.pixel-equip-icon.pixel-tier-fan   { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)); }
+.pixel-equip-icon.pixel-tier-liang { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 5px rgba(82, 196, 26, 0.65)); }
+.pixel-equip-icon.pixel-tier-ling  { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 6px rgba(19, 194, 194, 0.7)); }
+.pixel-equip-icon.pixel-tier-xuan  { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 7px rgba(22, 119, 255, 0.75)); }
+.pixel-equip-icon.pixel-tier-di    { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 8px rgba(212, 136, 6, 0.75)); }
+.pixel-equip-icon.pixel-tier-tian  { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 9px rgba(114, 46, 209, 0.8)); }
+.pixel-equip-icon.pixel-tier-bao   { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 10px rgba(235, 47, 150, 0.8)); }
+.pixel-equip-icon.pixel-tier-xian  { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 11px rgba(245, 34, 45, 0.85)); }
+.pixel-equip-icon.pixel-tier-shen  { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 12px rgba(250, 173, 20, 0.9)); }
+.pixel-equip-icon.pixel-tier-chaos { filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 14px rgba(190, 80, 255, 0.9)) drop-shadow(0 0 20px rgba(19, 194, 194, 0.5)); }
+
 
 /* 装备卡片展示 (含真名印记) */
 .equip-card {
@@ -831,121 +1137,105 @@ body {
   min-height: 290px;
 }
 
-/* 中央水墨立绘展示框 */
+/* 中央真像素本命法身灵境舞台 (风格与主修仙境完全统一：皓月当空 + 仙石灯火 + 白玉仙台 + 96x96真像素法身) */
 .char-portrait-frame {
   flex: 1;
   max-width: 175px;
-  height: 280px;
+  height: 304px;
   border-radius: 12px;
-  border: 2px solid #8c7c64;
+  border: 2px solid #3c3226;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-  background: #f4eee2;
-  margin: 0 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.8);
+  background: #0c101d;
+  margin: 0 4px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* 动效 1：道家吐纳悬浮呼吸微动效 */
-.char-portrait-img {
+.char-portrait-frame:active {
+  transform: scale(0.98);
+}
+
+.char-pixel-stage-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  display: block;
-  filter: contrast(1.02);
-  animation: immortalBreathe 5s ease-in-out infinite;
-  transform-origin: center bottom;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+  z-index: 1;
 }
 
-@keyframes immortalBreathe {
-  0%, 100% {
-    transform: translateY(0px) scale(1);
-  }
-  50% {
-    transform: translateY(-4px) scale(1.018);
-  }
-}
-
-/* 动效 2：脑后神光 / 庆云灵轮自转 */
-.char-celestial-wheel {
+/* 角色页青莲微光环 */
+.char-pixel-lotus-ring {
   position: absolute;
-  top: 15px;
+  bottom: 50px;
   left: 50%;
-  width: 110px;
-  height: 110px;
-  margin-left: -55px;
+  transform: translateX(-50%);
+  width: 130px;
+  height: 42px;
   border-radius: 50%;
-  border: 1px dashed rgba(212, 163, 75, 0.45);
-  box-shadow: 0 0 15px rgba(212, 163, 75, 0.25);
-  animation: auraWheelSpin 20s linear infinite;
+  border: 1px dashed rgba(64, 169, 255, 0.45);
+  box-shadow: 0 0 16px rgba(24, 144, 255, 0.3);
+  animation: rotateSlow 24s linear infinite;
   pointer-events: none;
   z-index: 2;
 }
 
-.char-celestial-wheel::after {
-  content: "";
+.char-pixel-qi-aura {
   position: absolute;
-  top: -3px;
+  bottom: 55px;
   left: 50%;
-  width: 6px;
-  height: 6px;
-  background: #d4a34b;
+  transform: translateX(-50%);
+  width: 130px;
+  height: 130px;
   border-radius: 50%;
-  box-shadow: 0 0 6px #d4a34b;
-}
-
-@keyframes auraWheelSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* 动效 3：微灵气粒子画布 */
-#char-particles-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  background: radial-gradient(circle, rgba(105, 192, 255, 0.22) 0%, rgba(24, 144, 255, 0) 70%);
+  animation: qiAuraPulse 3s ease-in-out infinite alternate;
   pointer-events: none;
-  z-index: 3;
+  z-index: 2;
 }
 
-/* 动效 4：流光掠影 (剑气/法袍流光) */
-.char-shimmer-sweep {
+/* 统一 96x96 真像素仙子精灵机 (与修炼页面同源同款，纯正像素方块质感，0杂边) */
+.char-pixel-avatar-sprite {
   position: absolute;
-  top: 0;
-  left: -150%;
-  width: 80%;
-  height: 100%;
-  background: linear-gradient(
-    115deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 240, 200, 0.25) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  transform: skewX(-20deg);
-  animation: shimmerPass 6s infinite ease-in-out;
-  pointer-events: none;
-  z-index: 4;
-}
-
-@keyframes shimmerPass {
-  0%, 70% {
-    left: -150%;
-  }
-  100% {
-    left: 180%;
-  }
-}
-
-.char-aura-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at center, transparent 40%, rgba(26, 22, 18, 0.4) 100%);
-  pointer-events: none;
+  top: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: 160px;
+  background-image: url('textures/meditation_sheet_96x96_clean.png');
+  background-repeat: no-repeat;
+  background-size: 1280px 160px; /* 8 帧 x 160px = 1280px */
+  background-position: 0px 0px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
   z-index: 5;
+  transition: transform 0.1s ease;
+  animation: charPixelIdleBreathe 3.2s ease-in-out infinite alternate;
+}
+
+@keyframes charPixelIdleBreathe {
+  0% { transform: translateX(-50%) translateY(0px) scale(1); }
+  100% { transform: translateX(-50%) translateY(-3px) scale(1.02); }
+}
+
+.char-pixel-avatar-sprite.frame-0 { background-position: 0px 0px; }
+.char-pixel-avatar-sprite.frame-1 { background-position: -160px 0px; }
+.char-pixel-avatar-sprite.frame-2 { background-position: -320px 0px; }
+.char-pixel-avatar-sprite.frame-3 { background-position: -480px 0px; }
+.char-pixel-avatar-sprite.frame-4 { background-position: -640px 0px; }
+.char-pixel-avatar-sprite.frame-5 { background-position: -800px 0px; }
+.char-pixel-avatar-sprite.frame-6 { background-position: -960px 0px; }
+.char-pixel-avatar-sprite.frame-7 { background-position: -1120px 0px; }
+
+.char-pixel-avatar-sprite.pulse-hit {
+  transform: translateX(-50%) scale(0.95);
+  filter: brightness(1.25);
 }
 
 .char-nameplate {
@@ -953,14 +1243,16 @@ body {
   bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(26, 22, 18, 0.85);
-  color: #f7f2e8;
+  background: rgba(30, 24, 18, 0.9);
+  color: #ffd700;
   padding: 3px 12px;
   border-radius: 20px;
   font-size: 11px;
+  font-weight: bold;
   white-space: nowrap;
-  border: 1px solid #c9bea9;
+  border: 1px solid #d4a34b;
   letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
   z-index: 6;
 }
 
@@ -969,101 +1261,71 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: 72px;
+  width: 82px;
 }
 
 .char-slot-cell {
-  background: #fdfaf3;
-  border: 1px solid var(--border-ink);
-  border-radius: 8px;
-  padding: 5px 4px;
+  background: linear-gradient(165deg, #181e28 0%, #0e121a 100%);
+  border: 1px solid #2d3648;
+  border-radius: 9px;
+  padding: 6px 3px 5px 3px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.22s cubic-bezier(0.2, 0, 0, 1);
   position: relative;
-  min-height: 58px;
+  min-height: 68px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.65), 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .char-slot-cell:hover {
-  background: #ffffff;
-  border-color: #8c7c64;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  background: linear-gradient(165deg, #222a38 0%, #121822 100%);
+  border-color: #556685;
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.7), 0 4px 12px rgba(0, 0, 0, 0.35);
+  transform: translateY(-1px);
 }
 
 .char-slot-cell.filled {
-  border-color: #b37400;
-  background: #fffcf5;
+  border-color: #3e4a60;
+  background: linear-gradient(165deg, #161c26 0%, #0c1017 100%);
 }
 
-/* 槽位右上角微型直接卸下角标 */
-.slot-unequip-btn {
+/* 槽位角标标签（如：冠、袍、腕、履、武、镜、佩、戒） */
+.slot-tag-corner {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  width: 16px;
-  height: 16px;
-  background: #a63126;
-  color: #fff;
-  border-radius: 50%;
+  top: 3px;
+  left: 5px;
   font-size: 10px;
-  line-height: 14px;
-  text-align: center;
-  cursor: pointer;
-  border: 1px solid #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
-  display: none;
-  z-index: 10;
-  transition: all 0.15s;
+  font-weight: 700;
+  color: rgba(200, 215, 235, 0.4);
+  font-family: -apple-system, "SimSun", "Noto Serif SC", serif;
+  z-index: 2;
+  pointer-events: none;
+  letter-spacing: 0.5px;
 }
 
-.slot-unequip-btn:hover {
-  background: #d93829;
-  transform: scale(1.15);
+.char-slot-cell:hover .slot-tag-corner {
+  color: rgba(200, 215, 235, 0.75);
 }
 
-.char-slot-cell.filled:hover .slot-unequip-btn {
-  display: block;
+/* 槽位右上角微型直接卸下角标（已收纳至点击检视中，主界面保持整洁） */
+.slot-unequip-btn {
+  display: none !important;
 }
 
-/* 动效 5：品质流光边框呼吸特效 */
-.char-slot-cell.slot-glow-ling {
-  border-color: #2b7a5a !important;
-  box-shadow: 0 0 8px rgba(43, 122, 90, 0.35);
+/* 槽位流光与粒子呼吸交融 */
+.char-slot-cell.slot-glow-xian,
+.char-slot-cell.slot-glow-shen,
+.char-slot-cell.slot-glow-chaos {
+  animation: highTierGlowPulse 2.8s ease-in-out infinite alternate;
 }
 
-.char-slot-cell.slot-glow-xuan {
-  border-color: #1e5ba0 !important;
-  box-shadow: 0 0 10px rgba(30, 91, 160, 0.45);
-}
-
-.char-slot-cell.slot-glow-bao {
-  border-color: #8430b8 !important;
-  box-shadow: 0 0 12px rgba(132, 48, 184, 0.55);
-  animation: baoGlowPulse 3s ease-in-out infinite;
-}
-
-@keyframes baoGlowPulse {
-  0%, 100% { box-shadow: 0 0 6px rgba(132, 48, 184, 0.3); }
-  50% { box-shadow: 0 0 14px rgba(132, 48, 184, 0.7); }
-}
-
-.char-slot-cell.slot-glow-xian {
-  border-color: #c93b2b !important;
-  background: #fffaf7 !important;
-  animation: xianFireGlow 2.5s ease-in-out infinite;
-}
-
-@keyframes xianFireGlow {
-  0%, 100% {
-    box-shadow: 0 0 8px rgba(201, 59, 43, 0.4), inset 0 0 4px rgba(212, 163, 75, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 16px rgba(201, 59, 43, 0.8), 0 0 25px rgba(212, 163, 75, 0.5), inset 0 0 8px rgba(212, 163, 75, 0.5);
-  }
+@keyframes highTierGlowPulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.015); }
 }
 
 /* 骰子 3D 快速抛掷翻滚与震屏 */
@@ -1100,13 +1362,17 @@ body {
 }
 
 .slot-equip-name {
-  font-size: 10px;
-  font-weight: bold;
-  color: var(--text-main);
+  font-size: 11px;
+  font-weight: 600;
+  color: #e2dcd0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 64px;
+  max-width: 78px;
+  margin-top: 3px;
+  line-height: 14px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95);
+  letter-spacing: 0.2px;
 }
 
 /* 阶位徽章 (一阶·炼气 / 二阶·筑基 / 三阶·结丹) */
@@ -1185,15 +1451,15 @@ body {
   text-align: center;
 }
 
-/* === 纯矢量国风装备图宝与悬浮呼吸 === */
+/* === 纯正修仙法宝像素装备展示盒 (58px 黄金尺寸，清晰呈现 96x96 细节) === */
 .equip-art-box {
-  width: 32px;
-  height: 32px;
+  width: 58px;
+  height: 58px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  transition: transform 0.2s;
+  transition: transform 0.22s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .equip-art-box svg {
@@ -1285,14 +1551,17 @@ body {
 }
 
 .hot-ingot-core {
-  width: 52px;
-  height: 52px;
+  position: absolute;
+  left: 49%;
+  bottom: 52px;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2;
-  margin-bottom: 8px;
-  filter: drop-shadow(0 0 12px #ff6600) drop-shadow(0 0 25px #ffaa00);
+  z-index: 8;
+  filter: drop-shadow(0 0 10px #ff6600) drop-shadow(0 0 18px #ffaa00);
   animation: ingotHeatGlow 2s ease-in-out infinite;
   transition: transform 0.1s;
 }

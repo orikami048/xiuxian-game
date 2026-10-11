@@ -121,15 +121,24 @@
   };
 
   function getEquipSvgIcon(slotKey, qualityClass = "") {
-    let color = "#d4a34b";
-    if (qualityClass === "quality-xian") color = "#ff3300";
-    else if (qualityClass === "quality-bao") color = "#b842ff";
-    else if (qualityClass === "quality-xuan") color = "#2080f0";
-    else if (qualityClass === "quality-ling") color = "#2b7a5a";
-    else if (qualityClass === "quality-fan") color = "#8c7c64";
+    let qual = "fan";
+    if (typeof qualityClass === "string") {
+      if (qualityClass.includes("chaos") || qualityClass.includes("10")) qual = "chaos";
+      else if (qualityClass.includes("shen") || qualityClass.includes("9")) qual = "shen";
+      else if (qualityClass.includes("xian") || qualityClass.includes("8")) qual = "xian";
+      else if (qualityClass.includes("bao") || qualityClass.includes("7")) qual = "bao";
+      else if (qualityClass.includes("tian") || qualityClass.includes("6")) qual = "tian";
+      else if (qualityClass.includes("di") || qualityClass.includes("5")) qual = "di";
+      else if (qualityClass.includes("xuan") || qualityClass.includes("4")) qual = "xuan";
+      else if (qualityClass.includes("ling") || qualityClass.includes("3")) qual = "ling";
+      else if (qualityClass.includes("liang") || qualityClass.includes("2")) qual = "liang";
+      else qual = "fan";
+    }
 
-    const fn = EQUIP_SVG_ICONS[slotKey] || EQUIP_SVG_ICONS.weapon;
-    return fn(color);
+    const validSlots = ["weapon", "armor", "head", "hand", "foot", "offhand", "necklace", "ring"];
+    const sKey = validSlots.includes(slotKey) ? slotKey : "weapon";
+
+    return `<img src="textures/equip/96x96/${sKey}_${qual}.png" class="pixel-equip-icon pixel-tier-${qual}" alt="${sKey}" draggable="false">`;
   }
 
   // 三阶修仙装备图鉴与百炼配方
@@ -470,28 +479,43 @@
       if (!cell || !nameEl) return;
 
       // 清除旧的动态光晕
-      cell.classList.remove("filled", "slot-glow-ling", "slot-glow-xuan", "slot-glow-bao", "slot-glow-xian");
+      cell.classList.remove(
+        "filled",
+        "slot-glow-fan", "slot-glow-liang", "slot-glow-ling", "slot-glow-xuan", "slot-glow-di",
+        "slot-glow-tian", "slot-glow-bao", "slot-glow-xian", "slot-glow-shen", "slot-glow-chaos"
+      );
 
       const item = state.equipped[slotKey];
       if (item) {
         cell.classList.add("filled");
 
-        // 动态附加品质光晕动效
-        if (item.qualityClass === "quality-xian") cell.classList.add("slot-glow-xian");
-        else if (item.qualityClass === "quality-bao") cell.classList.add("slot-glow-bao");
-        else if (item.qualityClass === "quality-xuan") cell.classList.add("slot-glow-xuan");
-        else if (item.qualityClass === "quality-ling") cell.classList.add("slot-glow-ling");
+        // 动态附加 10 阶品质光晕动效
+        const qual = (item.qualityClass || "quality-fan").replace("quality-", "");
+        cell.classList.add(`slot-glow-${qual}`);
+
+        const TIER_COLORS = {
+          fan: "#9aa5b8",
+          liang: "#52c41a",
+          ling: "#13c2c2",
+          xuan: "#4096ff",
+          di: "#fa8c16",
+          tian: "#b37feb",
+          bao: "#ff85c0",
+          xian: "#ff4d4f",
+          shen: "#ffc53d",
+          chaos: "#d3adf7"
+        };
 
         nameEl.innerText = item.name;
-        nameEl.style.color = item.qualityClass === "quality-xian" ? "#a63126" : item.qualityClass === "quality-bao" ? "#8430b8" : "#2b7a5a";
+        nameEl.style.color = TIER_COLORS[qual] || "#4096ff";
         if (artEl) {
           artEl.innerHTML = getEquipSvgIcon(slotKey, item.qualityClass);
         }
       } else {
         nameEl.innerText = "空置";
-        nameEl.style.color = "var(--text-muted)";
+        nameEl.style.color = "#596579";
         if (artEl) {
-          artEl.innerHTML = `<span style="opacity:0.35;">${getEquipSvgIcon(slotKey, 'quality-fan')}</span>`;
+          artEl.innerHTML = `<span style="opacity:0.22; filter:grayscale(1); display:flex; align-items:center; justify-content:center;">${getEquipSvgIcon(slotKey, 'quality-fan')}</span>`;
         }
       }
     });
@@ -935,33 +959,28 @@
     }
   }
 
-  // 触发物理重锤挥击与受击变形
+  // 触发物理重锤挥击与受击变形 (方案 A：1024 满血高清原画母版 · 呼吸与硬核挥锤联动)
   function triggerHammerStrikeVisuals() {
-    // 铁匠骨骼右臂联动挥击
-    const puppetArm = document.getElementById("puppet-arm-right");
-    if (puppetArm) {
-      puppetArm.classList.remove("striking");
-      void puppetArm.offsetWidth;
-      puppetArm.classList.add("striking");
+    // 1. 全身下沉爆发与顿挫回弹
+    const canvasStage = document.getElementById("hd-girl-canvas-stage");
+    if (canvasStage) {
+      canvasStage.classList.remove("smash-strike");
+      void canvasStage.offsetWidth; // 触发 reflow 重置动画
+      canvasStage.classList.add("smash-strike");
     }
 
-    const hammerEl = document.getElementById("forge-hammer-tool");
-    if (hammerEl) {
-      hammerEl.classList.remove("swing-hammer");
-      void hammerEl.offsetWidth; // 触发 reflow 重置动画
-      hammerEl.classList.add("swing-hammer");
+    // 2. 发光神锤激荡流光残影
+    const trail = document.getElementById("hd-hammer-trail-layer");
+    if (trail) {
+      trail.classList.remove("active-sweep");
+      void trail.offsetWidth;
+      trail.classList.add("active-sweep");
     }
 
-    // 锤头击打在剑胚上的受力瞬间 (约130ms后) 触发受击压扁与火星四溅
+    // 3. 命中瞬间 (约110ms) 触发砧台火星爆发
     setTimeout(() => {
-      const ingotEl = document.getElementById("anvil-ingot-icon");
-      if (ingotEl) {
-        ingotEl.classList.remove("hit-squash");
-        void ingotEl.offsetWidth;
-        ingotEl.classList.add("hit-squash");
-      }
       spawnAnvilSparks();
-    }, 130);
+    }, 110);
   }
 
   function renderAnvilUI() {
@@ -1305,12 +1324,21 @@
     const recipe = anvilState.recipe;
     const tierData = anvilState.tierData;
 
-    let quality = "凡品";
-    let qualityClass = "quality-fan";
-    if (layer === 10) { quality = "仙品·大圆满"; qualityClass = "quality-xian"; }
-    else if (layer >= 7) { quality = "宝品·通玄"; qualityClass = "quality-bao"; }
-    else if (layer >= 4) { quality = "玄品·凝魄"; qualityClass = "quality-xuan"; }
-    else { quality = "灵品·清辉"; qualityClass = "quality-ling"; }
+    const TIER_10_NAMES = {
+      1: { q: "一阶·凡品", c: "quality-fan" },
+      2: { q: "二阶·良品", c: "quality-liang" },
+      3: { q: "三阶·灵品", c: "quality-ling" },
+      4: { q: "四阶·玄品", c: "quality-xuan" },
+      5: { q: "五阶·地品", c: "quality-di" },
+      6: { q: "六阶·天品", c: "quality-tian" },
+      7: { q: "七阶·宝品", c: "quality-bao" },
+      8: { q: "八阶·仙品", c: "quality-xian" },
+      9: { q: "九阶·神品", c: "quality-shen" },
+      10: { q: "十阶·混沌", c: "quality-chaos" }
+    };
+    const tInfo = TIER_10_NAMES[layer] || TIER_10_NAMES[1];
+    let quality = tInfo.q;
+    let qualityClass = tInfo.c;
 
     let affix = (layer >= 4 || Math.random() < 0.5) ? AFFIX_POOL[Math.floor(Math.random() * AFFIX_POOL.length)] : null;
 
@@ -1512,7 +1540,9 @@
   }
 
   // 打坐点击
-  function handleTaijiClick() {
+  // 核心：点击打坐吐纳 (联动 6 帧全动效像素美少女灵气爆发)
+  let _meditateAnimTimer = null;
+  function handleCultivateClick(event) {
     const realm = REALMS[state.realmIndex];
     let gain = realm.clickExp;
     const isCrit = Math.random() * 100 < (state.luck * 0.35);
@@ -1524,15 +1554,56 @@
 
     updateUI();
 
-    const wrapper = document.getElementById("taiji-wrapper");
-    const floatEl = document.createElement("div");
-    floatEl.className = `float-text ${isCrit ? "crit" : ""}`;
-    floatEl.innerText = isCrit ? `+${gain} 修为 (天眷暴击!)` : `+${gain} 修为`;
-    floatEl.style.left = `${45 + (Math.random() * 40 - 20)}px`;
-    floatEl.style.top = `${30 + (Math.random() * 20 - 10)}px`;
-    wrapper.appendChild(floatEl);
+    // 驱动真像素 8 帧灵气大周天运转动效 (平静 -> 灵息 -> 汇聚 -> 银发飘 -> 灵环扩散 -> 金印 -> 归位)
+    const trueSprite = document.getElementById("true-pixel-meditation-sprite");
+    const qiRipple = document.getElementById("hd-meditation-qi-ripple");
 
-    setTimeout(() => floatEl.remove(), 850);
+    if (trueSprite) {
+      if (_meditateAnimTimer) clearTimeout(_meditateAnimTimer);
+      trueSprite.classList.add("pulse-hit");
+
+      // 快速按序流转周天 8 帧
+      const frames = isCrit ? [1, 2, 3, 4, 5, 6, 7] : [1, 2, 3, 4, 5];
+      let step = 0;
+      const runStep = () => {
+        if (step < frames.length) {
+          trueSprite.className = `true-pixel-meditation-sprite frame-${frames[step]}`;
+          step++;
+          _meditateAnimTimer = setTimeout(runStep, 80);
+        } else {
+          trueSprite.className = "true-pixel-meditation-sprite frame-0";
+          trueSprite.classList.remove("pulse-hit");
+        }
+      };
+      runStep();
+    }
+
+    // 触发 Pixel Quest 式点阵抖动放射神光
+    if (window.triggerPixelDitherBurst) {
+      window.triggerPixelDitherBurst(isCrit);
+    }
+
+    if (qiRipple) {
+      qiRipple.classList.remove("ripple-active", "ripple-crit");
+      void qiRipple.offsetWidth;
+      qiRipple.classList.add(isCrit ? "ripple-crit" : "ripple-active");
+      setTimeout(() => {
+        qiRipple.classList.remove("ripple-active", "ripple-crit");
+      }, 700);
+    }
+
+    // 飘字动效
+    const stage = document.getElementById("meditation-stage-box");
+    if (stage) {
+      const floatEl = document.createElement("div");
+      floatEl.className = `float-text ${isCrit ? "crit" : ""}`;
+      floatEl.innerText = isCrit ? `+${gain} 修为 (天眷通玄!)` : `+${gain} 修为`;
+      floatEl.style.left = `${70 + (Math.random() * 40 - 20)}px`;
+      floatEl.style.top = `${60 + (Math.random() * 20 - 10)}px`;
+      stage.appendChild(floatEl);
+
+      setTimeout(() => floatEl.remove(), 850);
+    }
   }
 
   // 突破
@@ -2575,7 +2646,10 @@
     updateUI();
     renderLogs();
 
-    document.getElementById("taiji-wrapper").addEventListener("click", handleTaijiClick);
+    const stageBox = document.getElementById("meditation-stage-box");
+    if (stageBox) stageBox.addEventListener("click", handleCultivateClick);
+    const oldTaiji = document.getElementById("taiji-wrapper");
+    if (oldTaiji) oldTaiji.addEventListener("click", handleCultivateClick);
     document.getElementById("breakthrough-btn").addEventListener("click", handleBreakthrough);
 
     setInterval(gameTick, 1000);
@@ -2586,6 +2660,7 @@
 
   window.game = {
     switchTab,
+    handleCultivateClick,
     gatherResource,
     toggleEquip,
     repairEquip,

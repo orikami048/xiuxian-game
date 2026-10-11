@@ -71,14 +71,34 @@
           <button id="breakthrough-btn" class="breakthrough-btn" style="display:none;">突破玄关</button>
         </div>
 
-        <!-- 太极核心打坐互动区 -->
-        <div class="cultivation-circle-container">
-          <div id="taiji-wrapper" class="taiji-wrapper">
-            <div class="taiji-ring"></div>
-            <canvas id="taiji-canvas" class="taiji-canvas"></canvas>
-            <div class="taiji-text">修炼</div>
+        <!-- 首页核心：太虚灵境·真像素大场景舞台 (参考 Pixel Quest 风格全景重构) -->
+        <div class="cultivation-circle-container pixel-realm-stage-container">
+          <!-- 像素冒险风格顶衔标题 -->
+          <div class="pixel-realm-banner">
+            <span class="pixel-realm-banner-tag">✦ 灵泉吐纳 · 问道青冥 ✦</span>
           </div>
-          <div class="click-rate-hint" id="click-gain-text">每次修炼 +27 修为</div>
+
+          <div class="meditation-stage-box" id="meditation-stage-box" onclick="window.game.handleCultivateClick(event)">
+            <!-- 全景像素动态环境底布 (星夜/仙山/松林/灵池/抖动放射神光) -->
+            <canvas id="pixel-realm-canvas" class="pixel-realm-canvas"></canvas>
+
+            <!-- 旋转仙道青莲灵光环 -->
+            <div class="celestial-lotus-ring"></div>
+            <!-- 聚灵真气光晕 -->
+            <div class="meditation-qi-aura"></div>
+            
+            <!-- 纯净 96x96 真像素 8 帧动画精灵机 (0 杂毛黑边，纯正复古方块质感) -->
+            <div class="true-pixel-meditation-sprite" id="true-pixel-meditation-sprite"></div>
+
+            <!-- 点击周天灵气涟漪圈 -->
+            <div class="hd-meditation-qi-ripple" id="hd-meditation-qi-ripple"></div>
+
+            <!-- 浮空修炼提示文字 -->
+            <div class="meditation-interact-badge">
+              <span>☯ 吐纳周天</span>
+            </div>
+          </div>
+          <div class="click-rate-hint" id="click-gain-text">点击打坐吐纳 · 每次修炼 +27 修为</div>
         </div>
 
         <!-- 修炼流水日志卡片 (截图同款) -->
@@ -106,65 +126,63 @@
             <!-- 左侧 4 槽：头、甲、手、脚 -->
             <div class="char-slot-col">
               <div id="slot-head" class="char-slot-cell" onclick="window.game.openSlotInspect('head')">
-                <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('head')">✕</span>
+                <span class="slot-tag-corner">冠</span>
                 <div class="equip-art-box" id="slot-art-head"></div>
-                <span class="slot-tag-label">【头】冠簪</span>
                 <span id="slot-name-head" class="slot-equip-name">空置</span>
               </div>
               <div id="slot-armor" class="char-slot-cell" onclick="window.game.openSlotInspect('armor')">
-                <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('armor')">✕</span>
+                <span class="slot-tag-corner">袍</span>
                 <div class="equip-art-box" id="slot-art-armor"></div>
-                <span class="slot-tag-label">【甲】法袍</span>
                 <span id="slot-name-armor" class="slot-equip-name">空置</span>
               </div>
               <div id="slot-hand" class="char-slot-cell" onclick="window.game.openSlotInspect('hand')">
-                <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('hand')">✕</span>
+                <span class="slot-tag-corner">腕</span>
                 <div class="equip-art-box" id="slot-art-hand"></div>
-                <span class="slot-tag-label">【手】护腕</span>
                 <span id="slot-name-hand" class="slot-equip-name">空置</span>
               </div>
               <div id="slot-foot" class="char-slot-cell" onclick="window.game.openSlotInspect('foot')">
-                <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('foot')">✕</span>
+                <span class="slot-tag-corner">履</span>
                 <div class="equip-art-box" id="slot-art-foot"></div>
-                <span class="slot-tag-label">【脚】法靴</span>
                 <span id="slot-name-foot" class="slot-equip-name">空置</span>
               </div>
             </div>
 
-            <!-- 中央高清国风立绘 (含自转神光、灵气粒子与流光掠影) -->
-            <div class="char-portrait-frame">
-              <div class="char-celestial-wheel"></div>
-              <img src="character.jpg" alt="修仙道长" class="char-portrait-img">
-              <canvas id="char-particles-canvas"></canvas>
-              <div class="char-shimmer-sweep"></div>
-              <div class="char-aura-overlay"></div>
+            <!-- 中央真像素本命法身舞台 (风格与主修仙境完全统一：皓月当空 + 仙石灯火 + 白玉仙台 + 96x96真像素法身) -->
+            <div class="char-portrait-frame char-pixel-stage-box" id="char-portrait-frame">
+              <!-- 像素环境动态底布 (星夜/仙山/皓月/灵池极光/石灯) -->
+              <canvas id="char-pixel-stage-canvas" class="char-pixel-stage-canvas"></canvas>
+
+              <!-- 青莲灵气微光环 -->
+              <div class="char-pixel-lotus-ring"></div>
+              <div class="char-pixel-qi-aura"></div>
+
+              <!-- 统一 96x96 真像素仙子精灵机 (与修炼页面同款纯净像素、1px闭合黑描边、8帧仙气吐纳) -->
+              <div class="char-pixel-avatar-sprite" id="char-pixel-avatar-sprite"></div>
+
+              <!-- 浮空操作境界药丸徽章 -->
               <div class="char-nameplate" id="char-nameplate-text">太虚散人</div>
             </div>
 
             <!-- 右侧 4 槽：武器、副手、项链、戒指 -->
             <div class="char-slot-col">
               <div id="slot-weapon" class="char-slot-cell" onclick="window.game.openSlotInspect('weapon')">
-                <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('weapon')">✕</span>
+                <span class="slot-tag-corner">武</span>
                 <div class="equip-art-box" id="slot-art-weapon"></div>
-                <span class="slot-tag-label">【武】飞剑</span>
                 <span id="slot-name-weapon" class="slot-equip-name">空置</span>
               </div>
               <div id="slot-offhand" class="char-slot-cell" onclick="window.game.openSlotInspect('offhand')">
-                <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('offhand')">✕</span>
+                <span class="slot-tag-corner">镜</span>
                 <div class="equip-art-box" id="slot-art-offhand"></div>
-                <span class="slot-tag-label">【副】法镜</span>
                 <span id="slot-name-offhand" class="slot-equip-name">空置</span>
               </div>
               <div id="slot-necklace" class="char-slot-cell" onclick="window.game.openSlotInspect('necklace')">
-                <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('necklace')">✕</span>
+                <span class="slot-tag-corner">佩</span>
                 <div class="equip-art-box" id="slot-art-necklace"></div>
-                <span class="slot-tag-label">【链】灵佩</span>
                 <span id="slot-name-necklace" class="slot-equip-name">空置</span>
               </div>
               <div id="slot-ring" class="char-slot-cell" onclick="window.game.openSlotInspect('ring')">
-                <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('ring')">✕</span>
+                <span class="slot-tag-corner">戒</span>
                 <div class="equip-art-box" id="slot-art-ring"></div>
-                <span class="slot-tag-label">【戒】须弥</span>
                 <span id="slot-name-ring" class="slot-equip-name">空置</span>
               </div>
             </div>
@@ -586,69 +604,27 @@
             <!-- 10个层级刻度 -->
           </div>
 
-          <!-- 铁砧与剑胚舞台 (包含巨型玄铁重锤与三昧真火飞溅粒子) -->
-          <div class="anvil-stage" id="anvil-stage-stage">
+          <!-- 铁砧与剑胚舞台 (方案 A：1024 满血高清原画母版 · 呼吸与硬核挥锤联动) -->
+          <div class="anvil-stage anime-girl-anvil-stage" id="anvil-stage-stage">
             <div id="anvil-mult-box"></div>
             
-            <!-- 寻道大千式骨骼小妖铁匠 (头部、躯干呼吸、手臂连击) -->
-            <div class="forge-blacksmith-puppet" id="forge-blacksmith-puppet">
-              <svg viewBox="0 0 100 120" style="width:100%; height:100%;">
-                <!-- 腿部与脚底 -->
-                <path d="M35 90 L32 110 M55 90 L58 110" stroke="#4a3b2c" stroke-width="6" stroke-linecap="round"/>
-                <!-- 躯干 (呼吸骨骼) -->
-                <g class="puppet-body">
-                  <ellipse cx="46" cy="75" rx="16" ry="18" fill="#d97a38" stroke="#1c1813" stroke-width="2"/>
-                  <!-- 围裙 -->
-                  <path d="M36 68 L56 68 L54 88 L38 88 Z" fill="#2d2720"/>
-                  <!-- 飘带 -->
-                  <path d="M34 82 Q30 95 24 100" stroke="#a63126" stroke-width="3" stroke-linecap="round"/>
-                  <!-- 左臂支撑 -->
-                  <line x1="32" y1="65" x2="22" y2="80" stroke="#d97a38" stroke-width="5" stroke-linecap="round"/>
-                </g>
-                <!-- 头部 (摆动骨骼) -->
-                <g class="puppet-head">
-                  <circle cx="46" cy="42" r="16" fill="#d97a38" stroke="#1c1813" stroke-width="2"/>
-                  <!-- 猴耳/猪耳 -->
-                  <ellipse cx="30" cy="38" rx="5" ry="8" transform="rotate(-20 30 38)" fill="#ff9966"/>
-                  <ellipse cx="62" cy="38" rx="5" ry="8" transform="rotate(20 62 38)" fill="#ff9966"/>
-                  <!-- 发髻/红发带 -->
-                  <circle cx="46" cy="24" r="5" fill="#a63126"/>
-                  <!-- 眼睛与灵动神采 -->
-                  <circle cx="42" cy="40" r="2.5" fill="#ffffff"/>
-                  <circle cx="43" cy="40" r="1.2" fill="#1c1813"/>
-                  <circle cx="50" cy="40" r="2.5" fill="#ffffff"/>
-                  <circle cx="51" cy="40" r="1.2" fill="#1c1813"/>
-                  <!-- 专注闭口微笑 -->
-                  <path d="M43 48 Q46 51 50 48" stroke="#1c1813" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                </g>
-                <!-- 右臂 (挥锤骨骼联动) -->
-                <g class="puppet-arm-right" id="puppet-arm-right">
-                  <line x1="58" y1="65" x2="72" y2="55" stroke="#d97a38" stroke-width="6" stroke-linecap="round"/>
-                  <circle cx="72" cy="55" r="4" fill="#c46424"/>
-                </g>
-              </svg>
+            <!-- 方案 A：100% 满血细腻美少女打铁实体 (无损画质，绝无压缩与马赛克) -->
+            <div class="hd-girl-forge-viewport" id="hd-girl-forge-viewport">
+              <div class="forge-fire-pulse"></div>
+              
+              <!-- 主画卷容器 (待机微呼吸 + 挥击下沉回弹) -->
+              <div class="hd-girl-canvas-stage" id="hd-girl-canvas-stage">
+                <img src="textures/blacksmith_girl_hd.png" alt="银发仙修美少女打铁" class="hd-girl-master-img" id="hd-girl-master-img">
+                
+                <!-- 发光神锤重击残影光效层 (击打时凌空劈下) -->
+                <div class="hd-hammer-trail-layer" id="hd-hammer-trail-layer"></div>
+                <!-- 剑胚受击光斑与爆裂点 -->
+                <div class="hd-ingot-impact-center" id="hd-ingot-impact-center"></div>
+              </div>
             </div>
 
-            <!-- 挥击玄铁神锤 -->
-            <div class="forge-hammer-entity" id="forge-hammer-tool">
-              <svg viewBox="0 0 100 100" class="forge-hammer-svg">
-                <!-- 锤柄 -->
-                <line x1="30" y1="75" x2="68" y2="35" stroke="#7a4e25" stroke-width="8" stroke-linecap="round"/>
-                <line x1="28" y1="77" x2="38" y2="67" stroke="#d4a34b" stroke-width="9" stroke-linecap="round"/>
-                <!-- 锤头 -->
-                <polygon points="55,18 85,48 72,60 42,30" fill="#2d2926" stroke="#c9bea9" stroke-width="2.5"/>
-                <rect x="58" y="24" width="22" height="12" transform="rotate(45 58 24)" fill="#ffaa00" opacity="0.6"/>
-                <!-- 符文雕刻 -->
-                <circle cx="64" cy="39" r="3" fill="#ff4400"/>
-              </svg>
-            </div>
-            <!-- 铁砧台基底 -->
-            <div class="anvil-stone-base"></div>
-            <!-- 剑胚/装备核心 -->
-            <div id="anvil-ingot-icon" class="hot-ingot-core"></div>
             <!-- 火星飞溅画布 -->
-            <canvas id="anvil-sparks-canvas" width="280" height="130"></canvas>
-            <div style="font-size:10px; color:#ff9966; margin-top:6px; z-index:2;">三昧地火淬炼中</div>
+            <canvas id="anvil-sparks-canvas" width="320" height="180"></canvas>
           </div>
 
           <!-- 属性与突破概率 -->
@@ -733,6 +709,7 @@
   <!-- 《寻道大千》国风无阻断轻量 Toast 提示挂载点 -->
   <div id="xiuxian-toast-container"></div>
 
+  <script src="pixel_realm_stage.js"></script>
   <script src="game.js"></script>
 </body>
 </html>
