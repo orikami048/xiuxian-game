@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>修仙模拟器：天命心火</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="game-container">
+    
+    <!-- 顶部道号与账户登录条 -->
+    <div class="user-account-bar" style="display:flex; justify-content:space-between; align-items:center; background:#241e17; color:#f0e6d6; padding:4px 12px; font-size:11px; border-bottom:1px solid #3d3226;">
+      <div style="display:flex; align-items:center; gap:6px;">
+        <span style="color:#d4a34b;">👤 仙尊道号:</span>
+        <b id="bar-dao-name" style="color:#ffd700;">太虚散人</b>
+        <span id="bar-auth-status" class="tier-tag tier-1" style="font-size:9px; padding:1px 5px;">单机散修</span>
+      </div>
+      <div>
+        <button id="btn-open-auth" class="action-btn gold" style="font-size:10px; padding:2px 8px;" onclick="window.game.openAuthModal()">
+          🔑 账号登入 / 开辟道途
+        </button>
+      </div>
+    <!-- 全服通报走马灯播报栏 -->
+    <div class="world-broadcast-bar" id="world-broadcast-container">
+      <span class="broadcast-badge">全服通报</span>
+      <span class="broadcast-marquee" id="world-broadcast-text">【天道昭告】太虚古界开启，凡炼制十层大圆满神兵者将震动九天！</span>
+    </div>
+
+    <!-- 顶部主数值栏 (灵石、修为、战力、福缘、心火) -->
+    <header class="top-status-bar">
+      <div class="stat-item">
+        <span class="stat-label">◇ 灵石</span>
+        <span class="stat-value" id="top-stones">0</span>
+        <span class="stat-sub">+1/5息</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">○ 修为</span>
+        <span class="stat-value" id="top-exp">32</span>
+        <span class="stat-sub">+3/息</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">△ 战力</span>
+        <span class="stat-value" id="top-power">27</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label stat-luck">✦ 福缘</span>
+        <span class="stat-value stat-luck" id="top-luck">75</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label" style="color:var(--text-crimson);">🔥 心火</span>
+        <span class="stat-value" style="color:var(--text-crimson);" id="top-heartfire">3/3</span>
+      </div>
+    </header>
+
+    <!-- 主视口区域 -->
+    <main class="main-viewport">
+      
+      <!-- TAB 1: 修炼挂机主页 (高度复原截图) -->
+      <section id="page-cultivate" class="page-view active">
+        <!-- 境界卡片 -->
+        <div class="realm-card">
+          <div class="realm-title" id="realm-title">炼气二层</div>
+          <div class="realm-desc" id="realm-desc">灵气入体，经脉初通</div>
+          <div class="progress-container">
+            <div class="progress-bar" id="realm-progress-bar"></div>
+          </div>
+          <div class="progress-text" id="realm-progress-text">修为: 32 / 300</div>
+          <button id="breakthrough-btn" class="breakthrough-btn" style="display:none;">突破玄关</button>
+        </div>
+
+        <!-- 太极核心打坐互动区 -->
+        <div class="cultivation-circle-container">
+          <div id="taiji-wrapper" class="taiji-wrapper">
+            <div class="taiji-ring"></div>
+            <canvas id="taiji-canvas" class="taiji-canvas"></canvas>
+            <div class="taiji-text">修炼</div>
+          </div>
+          <div class="click-rate-hint" id="click-gain-text">每次修炼 +27 修为</div>
+        </div>
+
+        <!-- 修炼流水日志卡片 (截图同款) -->
+        <div class="log-card">
+          <div class="card-header">
+            <span>◇ 修炼日志</span>
+            <span style="font-size:10px; color:var(--text-muted);">天地浩渺·因果轮回</span>
+          </div>
+          <div class="log-scroll-area" id="log-scroll-area">
+            <!-- 动态填充日志条目 -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: 角色主面板 (立绘 + 8大装备槽位 + 八维属性) -->
+      <section id="page-character" class="page-view">
+        <div class="character-viewport-box">
+          <div class="card-header">
+            <span>👤 本命法身 (角色八宝)</span>
+            <span style="font-size:10px; color:var(--text-gold);" id="char-badge-realm">炼气二层 · 太虚散人</span>
+          </div>
+
+          <!-- 中央立绘与左右 4+4 装备槽 -->
+          <div class="char-main-stage">
+            <!-- 左侧 4 槽：头、甲、手、脚 -->
+            <div class="char-slot-col">
+              <div id="slot-head" class="char-slot-cell" onclick="window.game.openSlotInspect('head')">
+                <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('head')">✕</span>
+                <span class="slot-icon-text">👑</span>
+                <span class="slot-tag-label">【头】冠簪</span>
+                <span id="slot-name-head" class="slot-equip-name">空置</span>
+              </div>
+              <div id="slot-armor" class="char-slot-cell" onclick="window.game.openSlotInspect('armor')">
+                <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('armor')">✕</span>
+                <span class="slot-icon-text">🥋</span>
+                <span class="slot-tag-label">【甲】法袍</span>
+                <span id="slot-name-armor" class="slot-equip-name">空置</span>
+              </div>
+              <div id="slot-hand" class="char-slot-cell" onclick="window.game.openSlotInspect('hand')">
+                <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('hand')">✕</span>
+                <span class="slot-icon-text">🧤</span>
+                <span class="slot-tag-label">【手】护腕</span>
+                <span id="slot-name-hand" class="slot-equip-name">空置</span>
+              </div>
+              <div id="slot-foot" class="char-slot-cell" onclick="window.game.openSlotInspect('foot')">
+                <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('foot')">✕</span>
+                <span class="slot-icon-text">👢</span>
+                <span class="slot-tag-label">【脚】法靴</span>
+                <span id="slot-name-foot" class="slot-equip-name">空置</span>
+              </div>
+            </div>
+
+            <!-- 中央高清国风立绘 (含自转神光、灵气粒子与流光掠影) -->
+            <div class="char-portrait-frame">
+              <div class="char-celestial-wheel"></div>
+              <img src="character.jpg" alt="修仙道长" class="char-portrait-img">
+              <canvas id="char-particles-canvas"></canvas>
+              <div class="char-shimmer-sweep"></div>
+              <div class="char-aura-overlay"></div>
+              <div class="char-nameplate" id="char-nameplate-text">太虚散人</div>
+            </div>
+
+            <!-- 右侧 4 槽：武器、副手、项链、戒指 -->
+            <div class="char-slot-col">
+              <div id="slot-weapon" class="char-slot-cell" onclick="window.game.openSlotInspect('weapon')">
+                <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('weapon')">✕</span>
+                <span class="slot-icon-text">🗡️</span>
+                <span class="slot-tag-label">【武】飞剑</span>
+                <span id="slot-name-weapon" class="slot-equip-name">空置</span>
+              </div>
+              <div id="slot-offhand" class="char-slot-cell" onclick="window.game.openSlotInspect('offhand')">
+                <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('offhand')">✕</span>
+                <span class="slot-icon-text">🪞</span>
+                <span class="slot-tag-label">【副】法镜</span>
+                <span id="slot-name-offhand" class="slot-equip-name">空置</span>
+              </div>
+              <div id="slot-necklace" class="char-slot-cell" onclick="window.game.openSlotInspect('necklace')">
+                <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('necklace')">✕</span>
+                <span class="slot-icon-text">📿</span>
+                <span class="slot-tag-label">【链】灵佩</span>
+                <span id="slot-name-necklace" class="slot-equip-name">空置</span>
+              </div>
+              <div id="slot-ring" class="char-slot-cell" onclick="window.game.openSlotInspect('ring')">
+                <span class="slot-unequip-btn" title="快捷卸下" onclick="event.stopPropagation(); window.game.unequipSlotDirect('ring')">✕</span>
+                <span class="slot-icon-text">💍</span>
+                <span class="slot-tag-label">【戒】须弥</span>
+                <span id="slot-name-ring" class="slot-equip-name">空置</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 八维修仙属性矩阵 -->
+          <div class="char-stats-matrix">
+            <div class="stat-cell-item">
+              <span class="stat-cell-title">攻击</span>
+              <span class="stat-cell-num" id="char-stat-atk" style="color:#a63126;">27</span>
+            </div>
+            <div class="stat-cell-item">
+              <span class="stat-cell-title">防御</span>
+              <span class="stat-cell-num" id="char-stat-def" style="color:#2b7a5a;">12</span>
+            </div>
+            <div class="stat-cell-item">
+              <span class="stat-cell-title">身法</span>
+              <span class="stat-cell-num" id="char-stat-spd">15</span>
+            </div>
+            <div class="stat-cell-item">
+              <span class="stat-cell-title">神识</span>
+              <span class="stat-cell-num" id="char-stat-wis">18</span>
+            </div>
+            <div class="stat-cell-item">
+              <span class="stat-cell-title">气血</span>
+              <span class="stat-cell-num" id="char-stat-hp" style="color:#a63126;">120</span>
+            </div>
+            <div class="stat-cell-item">
+              <span class="stat-cell-title">真元</span>
+              <span class="stat-cell-num" id="char-stat-mp" style="color:#1e5ba0;">60</span>
+            </div>
+            <div class="stat-cell-item">
+              <span class="stat-cell-title">福缘</span>
+              <span class="stat-cell-num" id="char-stat-luck" style="color:#b37400;">75</span>
+            </div>
+            <div class="stat-cell-item">
+              <span class="stat-cell-title">心火</span>
+              <span class="stat-cell-num" id="char-stat-hf" style="color:#c93b2b;">3/3</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: 洞府百工 (砍树、挖矿、种植、炼器) -->
+      <section id="page-cave" class="page-view">
+        <div class="forge-box">
+          <div class="card-header">
+            <span>🌿 灵峰采撷 (百工原料)</span>
+            <span style="font-size:11px; color:var(--text-muted);">木材·金石·灵药</span>
+          </div>
+          <div class="gather-grid" style="margin-top:10px;">
+            <div class="gather-btn-card" onclick="window.game.gatherResource('wood')">
+              <div class="gather-icon">🪵</div>
+              <div class="gather-name">灵峰伐木</div>
+              <div class="gather-count">青竹木: <span id="res-wood-common">0</span></div>
+              <div class="gather-count" style="color:var(--text-gold);">桃木: <span id="res-wood-rare">0</span></div>
+            </div>
+            <div class="gather-btn-card" onclick="window.game.gatherResource('ore')">
+              <div class="gather-icon">⛏️</div>
+              <div class="gather-name">灵脉采矿</div>
+              <div class="gather-count">寒铁矿: <span id="res-ore-common">0</span></div>
+              <div class="gather-count" style="color:var(--text-gold);">精金: <span id="res-ore-rare">0</span></div>
+            </div>
+            <div class="gather-btn-card" onclick="window.game.gatherResource('herb')">
+              <div class="gather-icon">🌱</div>
+              <div class="gather-name">灵药圃</div>
+              <div class="gather-count">凝血芝: <span id="res-herb-common">0</span></div>
+              <div class="gather-count" style="color:var(--text-gold);">玉芝: <span id="res-herb-rare">0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 百炼开炉锻造 (支持一阶炼气/二阶筑基/三阶结丹 与 8大部位) -->
+        <div class="forge-box">
+          <div class="card-header">
+            <span>🔥 百炼熔炉 (8部仙器手作)</span>
+            <span style="font-size:11px; color:var(--text-gold);">开炉气运判定</span>
+          </div>
+
+          <!-- 阶位选择器 (一阶炼气 / 二阶筑基 / 三阶结丹) -->
+          <div style="display:flex; gap:6px; margin:8px 0;">
+            <button id="forge-tier-btn-1" class="action-btn gold" style="flex:1; font-size:11px;" onclick="window.game.switchForgeTier(1)">一阶·炼气</button>
+            <button id="forge-tier-btn-2" class="action-btn" style="flex:1; font-size:11px;" onclick="window.game.switchForgeTier(2)">二阶·筑基</button>
+            <button id="forge-tier-btn-3" class="action-btn" style="flex:1; font-size:11px;" onclick="window.game.switchForgeTier(3)">三阶·结丹</button>
+          </div>
+
+          <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px; line-height:1.4;" id="forge-tier-intro">
+            【一阶·炼气】以青竹凡木与寒铁初矿炼制入门仙器，消耗材料少，适合初入仙途筑牢根基。
+          </div>
+
+          <!-- 8 大部位打造列表容器 -->
+          <div id="forge-items-list" style="display:flex; flex-direction:column; gap:6px; max-height:260px; overflow-y:auto;">
+            <!-- 动态填充 8 大部位锻造卡片 -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: 专属法宝仓库与鉴赏 (真名铭刻) -->
+      <section id="page-bag" class="page-view">
+        <div class="card-header">
+          <span>📜 本命藏宝阁</span>
+          <span style="font-size:11px; color:var(--text-muted);">真名印信·因果流转</span>
+        </div>
+        <div id="equip-list-container" style="display:flex; flex-direction:column; gap:8px;">
+          <!-- 动态渲染装备列表 -->
+        </div>
+      </section>
+
+      <!-- TAB 4: 昆仑论道台 (模式 1：灵气骰博弈) -->
+      <section id="page-duel" class="page-view">
+        <div class="realm-card">
+          <div class="realm-title">昆仑论道台</div>
+          <div class="realm-desc">以道会友，摇掷灵气骰展开神通克制与破招</div>
+          <div style="margin:16px 0;">
+            <div style="font-size:12px; color:var(--text-muted); line-height:1.6;">
+              双方各自掷出三颗灵气天命骰，利用点数压制对方真元护罩！<br>
+              装备上的<b>【气运真言】</b>将提供点数保底、重投或暴击增幅。
+            </div>
+          </div>
+          <button class="action-btn primary" style="font-size:14px; padding:8px 24px;" onclick="window.game.startDuel()">
+            寻觅同门论道
+          </button>
+        </div>
+      </section>
+
+      <!-- TAB 5: 太虚秘境 (模式 2：高风险搜打撤与杀人夺宝) -->
+      <section id="page-extract" class="page-view">
+        <div class="realm-card" style="border-color:#a63126;">
+          <div class="realm-title" style="color:#a63126;">太虚古墟·搜打撤</div>
+          <div class="realm-desc">探险搜刮 ➔ 争夺PK ➔ 杀人夺宝 ➔ 归返石阵撤离</div>
+          
+          <div style="background:#faecea; border:1px dashed #a63126; border-radius:8px; padding:10px; margin:14px 0; text-align:left; font-size:11px; line-height:1.6;">
+            <b>🚨 极度凶险法则：</b><br>
+            1. 搜刮到的极品天材地宝装在<b>临时行囊</b>中，只有安全撤离才能真正带回！<br>
+            2. <b>【带装博弈】</b>：穿戴神兵进场可大幅提升战力与Roll点胜率，但若不幸战败，对方将有极高概率<b>【杀人夺宝】</b>将你的亲铸装备夺走，并剥夺你的<b>本命心火</b>！
+          </div>
+
+          <button class="action-btn danger" style="font-size:14px; padding:8px 24px;" onclick="window.game.enterExtraction()">
+            踏入太虚秘境
+          </button>
+        </div>
+      </section>
+
+      <!-- TAB 6: 天道金榜 (排行榜) -->
+      <section id="page-rank" class="page-view">
+        <div class="card-header">
+          <span>🏆 天道金榜 (全服天骄)</span>
+          <span style="font-size:10px; color:var(--text-muted);">数据库实时同步</span>
+        </div>
+        <div style="display:flex; gap:8px; margin:8px 0;">
+          <button id="rank-tab-power" class="action-btn gold" style="flex:1;" onclick="window.game.switchRankTab('power')">战力金榜</button>
+          <button id="rank-tab-luck" class="action-btn" style="flex:1;" onclick="window.game.switchRankTab('luck')">气运天命榜</button>
+        </div>
+        <div id="rank-list-box" style="display:flex; flex-direction:column; gap:6px;">
+          <!-- 动态渲染排行榜 -->
+        </div>
+      </section>
+
+      <!-- TAB 7: 万宝楼交易行 (坊市寄售) -->
+      <section id="page-market" class="page-view">
+        <div class="card-header">
+          <span>🏪 万宝楼坊市 (交易行)</span>
+          <button class="action-btn gold" style="font-size:10px; padding:2px 8px;" onclick="window.game.openSellModal()">我要寄售</button>
+        </div>
+        <div style="font-size:11px; color:var(--text-muted); margin:4px 0 8px;">
+          在此可购买同门亲铸的真名神兵与罕见灵材。买下后装备的所有权与因果将转入您的本命藏宝阁！
+        </div>
+        <div id="market-list-box" style="display:flex; flex-direction:column; gap:8px;">
+          <!-- 动态渲染交易行在售商品 -->
+        </div>
+      </section>
+
+      <!-- TAB 8: 阿尔比恩专精命运盘 (8独立部位天赋树) -->
+      <section id="page-mastery" class="page-view">
+        <div class="mastery-card">
+          <div class="card-header">
+            <span>✨ 阿尔比恩式天工专精盘</span>
+            <span style="font-size:10px; color:var(--text-gold);">千锤百炼 · 功不唐捐</span>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin:6px 0 10px; line-height:1.4;">
+            参考阿尔比恩命运盘设计：每次开炉与挥锤锻打均积累熟练度。<b>全部位独立专精</b>，满级100级需耗费极深道心积累（平均需2月磨砺），十层极致概率最高可获得 <b>+50%</b> 天命提升（0.01 ➔ 0.015~0.02）！
+          </div>
+
+          <!-- 总百炼铁匠专精 -->
+          <div style="background:#26211a; color:#f0e6d6; border-radius:6px; padding:10px; margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+              <span style="color:#ffd700; font-weight:bold;">⚒️ 天道神匠总纲 (阿尔比恩核心命盘)</span>
+              <span id="mastery-lvl-smithing" style="color:#5cd68a; font-weight:bold;">Lv.1 / 100</span>
+            </div>
+            <div style="font-size:10px; color:#c7b89d; margin:4px 0;">全锻造部位冲层成功率基准提升: <span id="mastery-bonus-smithing" style="color:#ffd700;">+0.0%</span></div>
+            <div class="mastery-progress-bar" style="margin-top:4px;">
+              <div class="mastery-progress-fill" id="mastery-bar-smithing" style="width:5%;"></div>
+            </div>
+            <div style="font-size:9px; color:#888; text-align:right; margin-top:2px;" id="mastery-xp-smithing">XP: 0 / 100</div>
+          </div>
+
+          <!-- 8 大独立部位天赋网格 -->
+          <div style="font-size:11px; font-weight:bold; color:var(--text-main); margin-bottom:4px;">八大装备部位独立熟练度</div>
+          <div class="mastery-grid" id="mastery-grid-container">
+            <!-- 动态生成 8 大槽位专精节点 -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 9: 洞府仙山家园 (低阶灵脉采矿 + 全服高阶争夺) -->
+      <section id="page-homestead" class="page-view">
+        <!-- 仙府家园采矿产出 -->
+        <div class="homestead-card">
+          <div class="card-header">
+            <span>🏡 洞府仙山灵脉 (低阶素材自产)</span>
+            <button class="action-btn gold" style="font-size:10px; padding:2px 8px;" onclick="window.game.collectHomesteadResources()">
+              ✨ 一键收纳灵材
+            </button>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin:4px 0 10px;">
+            引天地灵脉入洞府，寒铁矿脉与青竹幽林日夜运转，无需冒险即可在家自动源源不断产出低阶基础炼器素材！
+          </div>
+
+          <div class="homestead-grid">
+            <div class="homestead-plot">
+              <div class="homestead-icon">⛏️</div>
+              <b style="font-size:12px;">聚灵铁矿脉</b>
+              <div style="font-size:10px; color:#756a5c;" id="home-lvl-mine">1级 (0.1矿/秒)</div>
+              <button class="action-btn" style="font-size:9px; padding:2px 4px; margin-top:4px;" onclick="window.game.upgradeHomesteadFacility('mine')">升级(30灵石)</button>
+            </div>
+            <div class="homestead-plot">
+              <div class="homestead-icon">🪵</div>
+              <b style="font-size:12px;">千竿青竹幽林</b>
+              <div style="font-size:10px; color:#756a5c;" id="home-lvl-forest">1级 (0.1木/秒)</div>
+              <button class="action-btn" style="font-size:9px; padding:2px 4px; margin-top:4px;" onclick="window.game.upgradeHomesteadFacility('forest')">升级(30灵石)</button>
+            </div>
+            <div class="homestead-plot">
+              <div class="homestead-icon">🌱</div>
+              <b style="font-size:12px;">回阳灵药圃</b>
+              <div style="font-size:10px; color:#756a5c;" id="home-lvl-herb">1级 (0.08药/秒)</div>
+              <button class="action-btn" style="font-size:9px; padding:2px 4px; margin-top:4px;" onclick="window.game.upgradeHomesteadFacility('herb')">升级(30灵石)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 全服高阶素材争夺 -->
+        <div class="homestead-card">
+          <div class="card-header">
+            <span>⚔️ 全球高阶仙材争夺战</span>
+            <span style="font-size:10px; color:#a63126;">万众瞩目 · 天道争锋</span>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin:4px 0 8px;">
+            【赤阳精金】、【万年雷击木】与【九叶玉芝】等三阶顶级天材地宝一旦在天地间凝结，天道将面向<b>全服修士通报</b>！诸位道友可即刻出手拼杀争夺！
+          </div>
+          <div id="world-contest-list">
+            <!-- 动态争夺卡片 -->
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- 底部导航栏 (修炼 / 角色 / 洞府 / 宝阁 / 专精 / 家园 / 论道 / 秘境 / 金榜 / 坊市) -->
+    <nav class="bottom-nav">
+      <div id="tab-cultivate" class="nav-tab active" onclick="window.game.switchTab('cultivate')">
+        <span class="tab-icon">☯</span>
+        <span class="tab-name">修炼</span>
+      </div>
+      <div id="tab-character" class="nav-tab" onclick="window.game.switchTab('character')">
+        <span class="tab-icon">👤</span>
+        <span class="tab-name">角色</span>
+      </div>
+      <div id="tab-cave" class="nav-tab" onclick="window.game.switchTab('cave')">
+        <span class="tab-icon">🏡</span>
+        <span class="tab-name">洞府</span>
+      </div>
+      <div id="tab-mastery" class="nav-tab" onclick="window.game.switchTab('mastery')">
+        <span class="tab-icon">✨</span>
+        <span class="tab-name">天赋</span>
+      </div>
+      <div id="tab-homestead" class="nav-tab" onclick="window.game.switchTab('homestead')">
+        <span class="tab-icon">🌾</span>
+        <span class="tab-name">家园</span>
+      </div>
+      <div id="tab-bag" class="nav-tab" onclick="window.game.switchTab('bag')">
+        <span class="tab-icon">📜</span>
+        <span class="tab-name">宝阁</span>
+      </div>
+      <div id="tab-duel" class="nav-tab" onclick="window.game.switchTab('duel')">
+        <span class="tab-icon">⚔️</span>
+        <span class="tab-name">论道</span>
+      </div>
+      <div id="tab-extract" class="nav-tab" onclick="window.game.switchTab('extract')">
+        <span class="tab-icon">🌪️</span>
+        <span class="tab-name">秘境</span>
+      </div>
+      <div id="tab-rank" class="nav-tab" onclick="window.game.switchTab('rank')">
+        <span class="tab-icon">🏆</span>
+        <span class="tab-name">金榜</span>
+      </div>
+      <div id="tab-market" class="nav-tab" onclick="window.game.switchTab('market')">
+        <span class="tab-icon">🏪</span>
+        <span class="tab-name">坊市</span>
+      </div>
+    </nav>
+
+    <!-- 弹窗 1：论道台对战界面 -->
+    <div id="duel-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">⚔️ 昆仑论道·灵气骰斗法</div>
+        <div style="font-size:12px; text-align:center; margin-bottom:6px;" id="duel-round-text">第 1 回合</div>
+
+        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:8px;">
+          <div><b>道友</b>: 气血 <span id="duel-player-hp" style="color:#2b7a5a; font-weight:bold;">100</span></div>
+          <div><b id="duel-enemy-name">同门</b>: 气血 <span id="duel-enemy-hp" style="color:#a63126; font-weight:bold;">100</span></div>
+        </div>
+
+        <div class="dice-arena">
+          <div style="font-size:11px; color:var(--text-muted);">我方灵气骰</div>
+          <div class="dice-container" id="duel-player-dices"></div>
+
+          <div style="font-size:11px; color:var(--text-muted); margin-top:10px;">敌方灵气骰</div>
+          <div class="dice-container" id="duel-enemy-dices"></div>
+        </div>
+
+        <div style="display:flex; justify-content:center; gap:8px; margin-top:12px;">
+          <button class="action-btn gold" onclick="window.game.executeDuelRound()">掷骰出招！</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗 2：太虚秘境搜打撤 (Extraction) 界面 -->
+    <div id="extraction-modal" class="modal-overlay">
+      <div class="modal-content" style="background:#1f1b17; border-color:#82261e; color:#eae3d8;">
+        <div class="modal-header" style="color:#e6b86e; border-color:#4a3f33;">
+          🌪️ 太虚古墟 (搜·打·撤)
+        </div>
+
+        <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:6px;">
+          <span id="extract-floor-text">第 1 重古迹</span>
+          <span id="extract-ap-text" style="color:#e6b86e;">行动气力: 6</span>
+        </div>
+
+        <!-- 临时储物袋 -->
+        <div class="loot-pouch">
+          <div style="font-size:10px; color:#c9bea9;">临时储物袋 (战死则损失，撤离带出):</div>
+          <div class="loot-grid" id="extract-loot-grid"></div>
+        </div>
+
+        <!-- 秘境事件区 -->
+        <div id="extract-event-box" style="background:#2a241e; border:1px solid #4a3e30; border-radius:8px; padding:10px; font-size:11px; min-height:75px; display:flex; align-items:center; justify-content:center; text-align:center; margin:8px 0;">
+          古墟中煞气缭绕，四方寂静无声。请选择探索或寻找传送古阵撤离……
+        </div>
+
+        <!-- 控制按钮 -->
+        <div style="display:flex; justify-content:center; gap:8px; margin-top:10px;">
+          <button id="extract-explore-btn" class="action-btn" onclick="window.game.extractionExplore()">深入探索 (搜)</button>
+          <button id="extract-fight-btn" class="action-btn danger" style="display:none;" onclick="window.game.extractionFight()">天道决斗 (打·夺宝)</button>
+          <button id="extract-escape-btn" class="action-btn primary" onclick="window.game.extractionEscape()">归返石阵 (撤离)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗 3：万宝楼上架寄售界面 -->
+    <div id="sell-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">🏪 坊市寄售·挂牌神兵</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">
+          选择您亲铸的法宝挂牌上架，交易成功后灵石将自动结算归入囊中！
+        </div>
+        <div style="margin-bottom:10px;">
+          <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">选择法宝:</label>
+          <select id="sell-item-select" style="width:100%; padding:6px; font-family:var(--font-serif); border-radius:6px; border:1px solid var(--border-ink);">
+            <!-- 动态填充背包装备 -->
+          </select>
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">标价灵石:</label>
+          <input type="number" id="sell-price-input" value="30" min="1" max="99999" style="width:100%; padding:6px; font-family:var(--font-sans); border-radius:6px; border:1px solid var(--border-ink);">
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+          <button class="action-btn" onclick="document.getElementById('sell-modal').classList.remove('active')">取消</button>
+          <button class="action-btn gold" onclick="window.game.confirmSellItem()">确认上架挂牌</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗 4：槽位法宝检视与穿戴/卸下更换界面 -->
+    <div id="inspect-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header" id="inspect-modal-title">👑 【头部】冠簪槽位</div>
+        
+        <!-- 当前佩戴详情 -->
+        <div id="inspect-current-box" style="margin-bottom:12px;"></div>
+
+        <!-- 背包中可供替换的同部位装备列表 -->
+        <div class="card-header" style="font-size:11px; margin-top:8px;">
+          <span>🎒 背包中可换装备</span>
+        </div>
+        <div id="inspect-candidates-list" style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto; margin-top:6px;"></div>
+
+        <div style="display:flex; justify-content:flex-end; margin-top:12px;">
+          <button class="action-btn" onclick="document.getElementById('inspect-modal').classList.remove('active')">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗 5：百炼三昧锻造台 (挥锤锻打 · 1~10层气运冲击) -->
+    <div id="forge-anvil-modal" class="modal-overlay">
+      <div class="modal-content" style="background:#181411; border-color:#d4a34b; color:#f7f2e8; max-width:400px;">
+        <div class="modal-header" style="color:#d4a34b; border-color:#554838;">
+          🔥 三昧百炼锻台 · 气运冲层
+        </div>
+
+        <!-- 锻造台视口 -->
+        <div class="anvil-chamber" id="anvil-chamber-box">
+          <div style="font-size:11px; color:#c9bea9;">
+            当前锻造: <b id="anvil-item-name" style="color:#ffd700; font-size:13px;">青竹寒铁剑</b>
+          </div>
+
+          <!-- 1~10层指示器 -->
+          <div class="layer-stepper" id="anvil-layer-stepper">
+            <!-- 10个层级刻度 -->
+          </div>
+
+          <!-- 铁砧与剑胚舞台 -->
+          <div class="anvil-stage" id="anvil-stage-stage">
+            <div id="anvil-mult-box"></div>
+            <div id="anvil-ingot-icon" class="hot-ingot-core">🗡️</div>
+            <div style="font-size:10px; color:#ff9966; margin-top:6px;">三昧地火淬炼中</div>
+          </div>
+
+          <!-- 属性与突破概率 -->
+          <div style="background:#26201a; border:1px solid #4a3e30; border-radius:8px; padding:8px; margin:8px 0; text-align:left; font-size:11px; line-height:1.5;">
+            <div style="display:flex; justify-content:space-between;">
+              <span>当前位阶: <b id="anvil-layer-text" style="color:#ffd700;">一阶 (1层)</b></span>
+              <span>战力: <b id="anvil-power-text" style="color:#ff6633;">+18</b></span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:2px;">
+              <span>冲击下层几率: <b id="anvil-rate-text" style="color:#5cd68a;">90%</b></span>
+              <span>天命福缘: <b id="anvil-luck-text" style="color:#d4a34b;">75</b></span>
+            </div>
+            <div style="margin-top:4px; padding-top:4px; border-top:1px dashed #3d3226; font-size:10px; color:#d9ceb8; display:flex; justify-content:space-between;">
+              <span>锻造词条: <b id="anvil-stats-detail" style="color:#66cdaa;">攻+25</b></span>
+              <span id="anvil-range-hint" style="color:#e6b86e; font-size:9px;">(波动范围 80%~130%)</span>
+            </div>
+            <div id="anvil-warning-text" style="font-size:9px; color:#888; margin-top:3px;">
+              提示: 每一锤随机爆发 ×1.1 ~ ×3.0 淬炼倍率，词条按波动范围随机浮动增长！
+            </div>
+          </div>
+
+          <!-- 挥锤消耗提示栏 -->
+          <div id="anvil-strike-cost-box" style="background:#201a14; border:1px dashed #d4a34b; border-radius:6px; padding:6px 8px; margin-bottom:8px; font-size:11px; color:#e0d3be; display:flex; justify-content:space-between; align-items:center;">
+            <span>锤打消耗: <b id="anvil-cost-detail" style="color:#ffd700;">寒铁矿×1</b></span>
+            <span id="anvil-res-has" style="color:#aaa; font-size:10px;">拥有: 15</span>
+          </div>
+
+          <!-- 操作按钮：挥锤 vs 收炉 -->
+          <div style="display:flex; gap:8px; justify-content:center; margin-top:6px;">
+            <button id="anvil-strike-btn" class="action-btn gold" style="flex:1; padding:8px 0; font-size:13px;" onclick="window.game.strikeAnvilHammer()">
+              🔨 挥锤锻打 (冲层)
+            </button>
+            <button class="action-btn primary" style="flex:1; padding:8px 0; font-size:13px;" onclick="window.game.quenchAndFinishForge()">
+              📦 淬火收炉 (入库)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗 6：全服账号注册与登录 (开辟道途) -->
+    <div id="auth-modal" class="modal-overlay">
+      <div class="modal-content" style="max-width:340px;">
+        <div class="modal-header">🔑 仙途箓记 · 账号通行</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:12px; line-height:1.4;">
+          登入您的修仙账号，所有锻造、神兵与战力将实时经由服务器权威核准并云端归档！
+        </div>
+
+        <div style="margin-bottom:10px;">
+          <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">道号尊名 (真名印刻):</label>
+          <input type="text" id="auth-daoname-input" placeholder="如：韩立、太虚散人" style="width:100%; padding:6px; font-family:var(--font-serif); border-radius:6px; border:1px solid var(--border-ink);">
+        </div>
+
+        <div style="margin-bottom:10px;">
+          <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">修行账号:</label>
+          <input type="text" id="auth-username-input" placeholder="字母或数字" style="width:100%; padding:6px; font-family:var(--font-sans); border-radius:6px; border:1px solid var(--border-ink);">
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <label style="font-size:11px; font-weight:bold; display:block; margin-bottom:4px;">道心密押 (密码):</label>
+          <input type="password" id="auth-password-input" placeholder="至少6位" style="width:100%; padding:6px; font-family:var(--font-sans); border-radius:6px; border:1px solid var(--border-ink);">
+        </div>
+
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          <button class="action-btn" onclick="document.getElementById('auth-modal').classList.remove('active')">暂且散修</button>
+          <button class="action-btn primary" onclick="window.game.submitAuthLogin()">立即登录</button>
+          <button class="action-btn gold" onclick="window.game.submitAuthRegister()">开辟新道途</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+name = "xiuxian-game"
+pages_build_output_dir = "."
+
+# Cloudflare KV 命名空间（绑定为 XIUXIAN_KV 用于云端账户鉴权、权威存档与全服世界事件）
+[[kv_namespaces]]
+binding = "XIUXIAN_KV"
+id = "b8cb04a833584dac918e4de10b23ad59"

@@ -1,0 +1,17 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary scratch & restored files
+reconstructed_index.txt
+restored_index.html
+index_modular.html
+
+# Database files
+*.db
+*.sqlite3
+
+# Cloudflare Pages / Wrangler outputs
+.wrangler/
+.env
