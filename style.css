@@ -100,24 +100,32 @@ body {
   color: var(--text-gold);
 }
 
-/* 导航栏 Tabs */
+/* 导航栏 Tabs (10大模块自适应横滑) */
 .bottom-nav {
   display: flex;
   background: #ede6d6;
   border-top: 1px solid var(--border-ink);
-  padding: 6px 4px;
+  padding: 4px 2px;
   z-index: 10;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.bottom-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-tab {
-  flex: 1;
+  flex: 0 0 auto;
+  min-width: 44px;
+  padding: 4px 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 6px 0;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 6px;
   transition: all 0.2s;
   color: var(--text-muted);
 }
@@ -130,12 +138,13 @@ body {
 }
 
 .nav-tab .tab-icon {
-  font-size: 18px;
+  font-size: 16px;
   margin-bottom: 2px;
 }
 
 .nav-tab .tab-name {
-  font-size: 11px;
+  font-size: 10px;
+  white-space: nowrap;
 }
 
 /* 主内容视口 */
