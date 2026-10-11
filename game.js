@@ -937,6 +937,14 @@
 
   // 触发物理重锤挥击与受击变形
   function triggerHammerStrikeVisuals() {
+    // 铁匠骨骼右臂联动挥击
+    const puppetArm = document.getElementById("puppet-arm-right");
+    if (puppetArm) {
+      puppetArm.classList.remove("striking");
+      void puppetArm.offsetWidth;
+      puppetArm.classList.add("striking");
+    }
+
     const hammerEl = document.getElementById("forge-hammer-tool");
     if (hammerEl) {
       hammerEl.classList.remove("swing-hammer");

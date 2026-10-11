@@ -158,21 +158,127 @@ body {
   gap: 12px;
 }
 
-/* 页面切换控制 */
+/* 页面切换控制 (寻道大千式丝滑卷轴渐入与弹性微缩放) */
 .page-view {
   display: none;
   flex-direction: column;
   gap: 12px;
-  animation: fadeIn 0.25s ease-out;
+  animation: pageSlideBounce 0.32s cubic-bezier(0.18, 0.89, 0.32, 1.15);
 }
 
 .page-view.active {
   display: flex;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes pageSlideBounce {
+  0% { opacity: 0; transform: translateY(12px) scale(0.985); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 全页面卡片悬浮呼吸与动态光晕 */
+.card-anim-float {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card-anim-float:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* 进度条与境界丹田流光 */
+.realm-progress-fill {
+  position: relative;
+  overflow: hidden;
+}
+.realm-progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: shimmerLight 2.2s infinite;
+}
+
+@keyframes shimmerLight {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+/* 突破按钮真火脉冲 */
+#breakthrough-btn {
+  animation: pulseGold 1.5s infinite;
+}
+
+@keyframes pulseGold {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(212, 163, 75, 0.4); }
+  50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+}
+
+/* 家园系统自然生态摇曳动效 */
+.home-icon-sway {
+  display: inline-block;
+  animation: natureSway 3s ease-in-out infinite alternate;
+}
+@keyframes natureSway {
+  0% { transform: rotate(-3deg) translateY(0); }
+  100% { transform: rotate(3deg) translateY(-2px); }
+}
+
+.home-ore-sparkle {
+  animation: oreGlow 2.5s ease-in-out infinite alternate;
+}
+@keyframes oreGlow {
+  0% { filter: drop-shadow(0 0 2px #d4a34b); }
+  100% { filter: drop-shadow(0 0 10px #ffd700) brightness(1.2); }
+}
+
+/* 骨骼打铁小人 (Spine-Style Procedural Skeleton Puppet) */
+.forge-blacksmith-puppet {
+  position: absolute;
+  left: 20px;
+  bottom: 12px;
+  width: 95px;
+  height: 110px;
+  pointer-events: none;
+  z-index: 10;
+  transform-origin: bottom center;
+}
+
+/* 躯干呼吸起伏 */
+.puppet-body {
+  animation: puppetBreathe 2s ease-in-out infinite alternate;
+  transform-origin: 45px 85px;
+}
+
+@keyframes puppetBreathe {
+  0% { transform: translateY(0) scaleY(1); }
+  100% { transform: translateY(1.5px) scaleY(0.97); }
+}
+
+/* 头部轻微摆动 */
+.puppet-head {
+  animation: puppetHeadBob 3s ease-in-out infinite alternate;
+  transform-origin: 45px 40px;
+}
+
+@keyframes puppetHeadBob {
+  0% { transform: rotate(-2deg); }
+  100% { transform: rotate(3deg); }
+}
+
+/* 挥臂打铁联动 */
+.puppet-arm-right {
+  transform-origin: 58px 48px;
+  transition: transform 0.1s;
+}
+
+.puppet-arm-right.striking {
+  animation: puppetArmStrike 0.38s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes puppetArmStrike {
+  0% { transform: rotate(-35deg); }
+  35% { transform: rotate(45deg); }
+  45% { transform: rotate(40deg); }
+  100% { transform: rotate(0deg); }
 }
 
 /* 境界卡片 */

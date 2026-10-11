@@ -65,7 +65,7 @@
           <div class="realm-title" id="realm-title">炼气二层</div>
           <div class="realm-desc" id="realm-desc">灵气入体，经脉初通</div>
           <div class="progress-container">
-            <div class="progress-bar" id="realm-progress-bar"></div>
+            <div class="progress-bar realm-progress-fill" id="realm-progress-bar"></div>
           </div>
           <div class="progress-text" id="realm-progress-text">修为: 32 / 300</div>
           <button id="breakthrough-btn" class="breakthrough-btn" style="display:none;">突破玄关</button>
@@ -384,20 +384,20 @@
           </div>
 
           <div class="homestead-grid">
-            <div class="homestead-plot">
-              <div class="homestead-icon">⛏️</div>
+            <div class="homestead-plot card-anim-float">
+              <div class="homestead-icon home-ore-sparkle">⛏️</div>
               <b style="font-size:12px;">聚灵铁矿脉</b>
               <div style="font-size:10px; color:#756a5c;" id="home-lvl-mine">1级 (0.1矿/秒)</div>
               <button class="action-btn" style="font-size:9px; padding:2px 4px; margin-top:4px;" onclick="window.game.upgradeHomesteadFacility('mine')">升级(30灵石)</button>
             </div>
-            <div class="homestead-plot">
-              <div class="homestead-icon">🪵</div>
+            <div class="homestead-plot card-anim-float">
+              <div class="homestead-icon home-icon-sway">🪵</div>
               <b style="font-size:12px;">千竿青竹幽林</b>
               <div style="font-size:10px; color:#756a5c;" id="home-lvl-forest">1级 (0.1木/秒)</div>
               <button class="action-btn" style="font-size:9px; padding:2px 4px; margin-top:4px;" onclick="window.game.upgradeHomesteadFacility('forest')">升级(30灵石)</button>
             </div>
-            <div class="homestead-plot">
-              <div class="homestead-icon">🌱</div>
+            <div class="homestead-plot card-anim-float">
+              <div class="homestead-icon home-icon-sway">🌱</div>
               <b style="font-size:12px;">回阳灵药圃</b>
               <div style="font-size:10px; color:#756a5c;" id="home-lvl-herb">1级 (0.08药/秒)</div>
               <button class="action-btn" style="font-size:9px; padding:2px 4px; margin-top:4px;" onclick="window.game.upgradeHomesteadFacility('herb')">升级(30灵石)</button>
@@ -589,6 +589,46 @@
           <!-- 铁砧与剑胚舞台 (包含巨型玄铁重锤与三昧真火飞溅粒子) -->
           <div class="anvil-stage" id="anvil-stage-stage">
             <div id="anvil-mult-box"></div>
+            
+            <!-- 寻道大千式骨骼小妖铁匠 (头部、躯干呼吸、手臂连击) -->
+            <div class="forge-blacksmith-puppet" id="forge-blacksmith-puppet">
+              <svg viewBox="0 0 100 120" style="width:100%; height:100%;">
+                <!-- 腿部与脚底 -->
+                <path d="M35 90 L32 110 M55 90 L58 110" stroke="#4a3b2c" stroke-width="6" stroke-linecap="round"/>
+                <!-- 躯干 (呼吸骨骼) -->
+                <g class="puppet-body">
+                  <ellipse cx="46" cy="75" rx="16" ry="18" fill="#d97a38" stroke="#1c1813" stroke-width="2"/>
+                  <!-- 围裙 -->
+                  <path d="M36 68 L56 68 L54 88 L38 88 Z" fill="#2d2720"/>
+                  <!-- 飘带 -->
+                  <path d="M34 82 Q30 95 24 100" stroke="#a63126" stroke-width="3" stroke-linecap="round"/>
+                  <!-- 左臂支撑 -->
+                  <line x1="32" y1="65" x2="22" y2="80" stroke="#d97a38" stroke-width="5" stroke-linecap="round"/>
+                </g>
+                <!-- 头部 (摆动骨骼) -->
+                <g class="puppet-head">
+                  <circle cx="46" cy="42" r="16" fill="#d97a38" stroke="#1c1813" stroke-width="2"/>
+                  <!-- 猴耳/猪耳 -->
+                  <ellipse cx="30" cy="38" rx="5" ry="8" transform="rotate(-20 30 38)" fill="#ff9966"/>
+                  <ellipse cx="62" cy="38" rx="5" ry="8" transform="rotate(20 62 38)" fill="#ff9966"/>
+                  <!-- 发髻/红发带 -->
+                  <circle cx="46" cy="24" r="5" fill="#a63126"/>
+                  <!-- 眼睛与灵动神采 -->
+                  <circle cx="42" cy="40" r="2.5" fill="#ffffff"/>
+                  <circle cx="43" cy="40" r="1.2" fill="#1c1813"/>
+                  <circle cx="50" cy="40" r="2.5" fill="#ffffff"/>
+                  <circle cx="51" cy="40" r="1.2" fill="#1c1813"/>
+                  <!-- 专注闭口微笑 -->
+                  <path d="M43 48 Q46 51 50 48" stroke="#1c1813" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                </g>
+                <!-- 右臂 (挥锤骨骼联动) -->
+                <g class="puppet-arm-right" id="puppet-arm-right">
+                  <line x1="58" y1="65" x2="72" y2="55" stroke="#d97a38" stroke-width="6" stroke-linecap="round"/>
+                  <circle cx="72" cy="55" r="4" fill="#c46424"/>
+                </g>
+              </svg>
+            </div>
+
             <!-- 挥击玄铁神锤 -->
             <div class="forge-hammer-entity" id="forge-hammer-tool">
               <svg viewBox="0 0 100 100" class="forge-hammer-svg">
